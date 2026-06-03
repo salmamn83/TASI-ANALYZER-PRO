@@ -3,24 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>محلل الأسهم السعودية</title>
+<title>TASI Analyzer Pro · محلل الأسهم السعودية</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #0a0e17;
-  --bg2: #111827;
-  --bg3: #1a2236;
-  --border: rgba(99,179,237,0.15);
-  --border2: rgba(99,179,237,0.3);
+  --bg: #060a14;
+  --bg2: #0a1020;
+  --bg3: #0f1729;
+  --border: rgba(56,189,248,0.12);
+  --border2: rgba(56,189,248,0.25);
   --accent: #3b82f6;
   --accent2: #60a5fa;
   --green: #10b981;
   --red: #ef4444;
   --amber: #f59e0b;
+  --purple: #a855f7;
   --text: #f1f5f9;
   --text2: #94a3b8;
-  --text3: #64748b;
+  --text3: #475569;
   --mono: 'IBM Plex Mono', monospace;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -32,22 +33,58 @@ body {
   font-size: 14px;
   line-height: 1.6;
 }
+
+/* BACKGROUND */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(56,189,248,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56,189,248,0.04) 1px, transparent 1px);
+  background-size: 36px 36px;
+  pointer-events: none;
+  z-index: 0;
+}
+body::after {
+  content: '';
+  position: fixed;
+  top: -150px; right: -100px;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(59,130,246,0.1) 0%, transparent 65%);
+  pointer-events: none;
+  z-index: 0;
+}
+.glow-bot {
+  position: fixed;
+  bottom: -100px; left: -80px;
+  width: 350px; height: 350px;
+  background: radial-gradient(circle, rgba(16,185,129,0.07) 0%, transparent 65%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* HEADER */
 .header {
-  border-bottom: 1px solid var(--border);
-  padding: 14px 24px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  background: var(--bg2);
   position: sticky;
   top: 0;
   z-index: 100;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(6,10,20,0.92);
+  backdrop-filter: blur(14px);
+  display: flex;
+  align-items: center;
+  gap: 16px;
   flex-wrap: wrap;
 }
 .logo {
   font-size: 16px;
-  font-weight: 600;
-  color: var(--accent2);
+  font-weight: 700;
+  background: linear-gradient(135deg, #60a5fa, #34d399);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -56,359 +93,320 @@ body {
 .search-wrap { display: flex; gap: 8px; flex: 1; min-width: 200px; max-width: 380px; }
 .search-input {
   flex: 1;
-  background: var(--bg3);
+  background: rgba(15,23,42,0.8);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 0 14px;
-  height: 38px;
+  height: 40px;
   color: var(--text);
   font-family: inherit;
   font-size: 14px;
   outline: none;
-  transition: border-color 0.2s;
+  transition: all 0.2s;
   text-align: right;
 }
 .search-input::placeholder { color: var(--text3); }
-.search-input:focus { border-color: var(--accent); }
+.search-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.15), 0 0 20px rgba(59,130,246,0.08);
+}
 .btn-search {
-  height: 38px;
-  padding: 0 18px;
-  background: var(--accent);
+  height: 40px;
+  padding: 0 20px;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   color: #fff;
   font-family: inherit;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
-  transition: background 0.2s;
+  box-shadow: 0 4px 15px rgba(59,130,246,0.3);
+  transition: all 0.2s;
 }
-.btn-search:hover { background: #2563eb; }
+.btn-search:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(59,130,246,0.4); }
+.btn-search:active { transform: scale(0.98); }
 .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-right: auto; }
 .chip {
   font-size: 11px;
   color: var(--text3);
-  background: var(--bg3);
+  background: rgba(15,23,42,0.7);
   border: 1px solid var(--border);
   border-radius: 20px;
-  padding: 3px 10px;
+  padding: 4px 12px;
   cursor: pointer;
   transition: all 0.2s;
 }
-.chip:hover { border-color: var(--accent); color: var(--accent2); }
-.main { max-width: 860px; margin: 0 auto; padding: 20px 16px; }
+.chip:hover { border-color: var(--border2); color: var(--accent2); }
+
+/* MAIN */
+.main { max-width: 880px; margin: 0 auto; padding: 20px 16px; position: relative; z-index: 1; }
+
+/* EMPTY */
 .empty {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 80px 24px;
-  gap: 12px;
+  gap: 16px;
   text-align: center;
 }
-.empty-icon {
-  width: 52px; height: 52px;
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  display: flex; align-items: center; justify-content: center;
-}
-.empty-title { font-size: 17px; font-weight: 500; color: var(--text2); }
-.empty-sub { font-size: 13px; color: var(--text3); }
-.loading {
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 80px 24px;
-  gap: 14px;
-}
+.empty-icon { font-size: 52px; }
+.empty-title { font-size: 20px; font-weight: 700; background: linear-gradient(135deg,#f1f5f9,#94a3b8); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.empty-sub { font-size: 14px; color: var(--text3); max-width: 300px; line-height: 1.7; }
+
+/* LOADING */
+.loading { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 80px 24px; gap: 16px; }
 .spinner {
-  width: 30px; height: 30px;
-  border: 2px solid var(--border);
+  width: 36px; height: 36px;
+  border: 2px solid rgba(59,130,246,0.15);
   border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
+  box-shadow: 0 0 20px rgba(59,130,246,0.2);
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-.loading-text { font-size: 13px; color: var(--text2); }
+.loading-text { font-size: 14px; color: var(--text2); }
+
+/* RESULTS */
 .results { display: none; flex-direction: column; gap: 10px; }
-.results-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 4px;
-}
+.results-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
 .sym-info { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text2); }
 .sym-tag {
   font-family: var(--mono);
   font-size: 12px;
-  background: var(--bg3);
-  border: 1px solid var(--border);
+  background: rgba(59,130,246,0.1);
+  border: 1px solid rgba(59,130,246,0.25);
   border-radius: 6px;
-  padding: 2px 8px;
+  padding: 2px 10px;
   color: var(--accent2);
 }
 .print-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: var(--text3);
-  background: var(--bg3);
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--text3);
+  background: rgba(15,23,42,0.7);
   border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 6px 12px;
-  cursor: pointer;
-  font-family: inherit;
+  border-radius: 8px; padding: 6px 14px;
+  cursor: pointer; font-family: inherit;
   transition: all 0.2s;
 }
-.print-btn:hover { border-color: var(--accent); color: var(--accent2); }
+.print-btn:hover { border-color: var(--border2); color: var(--accent2); }
+
+/* CARD */
 .card {
-  background: var(--bg2);
+  background: rgba(10,16,30,0.85);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 14px;
   overflow: hidden;
+  transition: all 0.25s;
 }
+.card:hover { border-color: var(--border2); box-shadow: 0 0 30px rgba(59,130,246,0.06); }
 .card-header {
   padding: 10px 16px;
+  background: linear-gradient(90deg, rgba(15,23,42,0.9), rgba(15,23,42,0.5));
   border-bottom: 1px solid var(--border);
-  background: var(--bg3);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  display: flex; align-items: center; gap: 8px;
 }
-.card-title {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--text3);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.card-num {
-  width: 18px; height: 18px;
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
-  color: var(--text3);
-}
+.card-emoji { font-size: 15px; }
+.card-title { font-size: 11px; font-weight: 600; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; }
 .card-body { padding: 14px 16px; }
+
+/* SECTION 1 */
 .s1-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
-.s1-name { font-size: 20px; font-weight: 600; }
-.s1-sub { font-size: 13px; color: var(--text2); margin-top: 2px; }
-.badge { font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; display: inline-block; }
-.badge-growth { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
-.badge-dividend { background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); }
-.badge-buy { background: rgba(16,185,129,0.15); color: #10b981; }
-.badge-hold { background: rgba(245,158,11,0.15); color: #f59e0b; }
-.badge-sell { background: rgba(239,68,68,0.15); color: #ef4444; }
+.s1-name { font-size: 22px; font-weight: 700; background: linear-gradient(135deg,#f1f5f9,#94a3b8); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.s1-sub { font-size: 12px; color: var(--text3); margin-top: 3px; display: flex; align-items: center; gap: 6px; }
+.badge { font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 20px; display: inline-block; }
+.badge-growth { background: rgba(16,185,129,0.12); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+.badge-dividend { background: rgba(245,158,11,0.12); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); }
+.badge-buy { background: rgba(16,185,129,0.12); color: #10b981; border: 1px solid rgba(16,185,129,0.25); }
+.badge-hold { background: rgba(245,158,11,0.12); color: #f59e0b; border: 1px solid rgba(245,158,11,0.25); }
+.badge-sell { background: rgba(239,68,68,0.12); color: #ef4444; border: 1px solid rgba(239,68,68,0.25); }
+.badge-under { background: rgba(16,185,129,0.12); color: #10b981; }
+.badge-over { background: rgba(239,68,68,0.12); color: #ef4444; }
+.badge-fair { background: rgba(245,158,11,0.12); color: #f59e0b; }
 .kv-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: grid; grid-template-columns: 1fr 1fr;
   border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
+  border-radius: 10px; overflow: hidden;
 }
-.kv-item {
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--border);
-  border-left: 1px solid var(--border);
-}
+.kv-item { padding: 10px 14px; border-bottom: 1px solid var(--border); border-left: 1px solid var(--border); }
 .kv-item:nth-child(odd) { border-left: none; }
 .kv-item:nth-last-child(-n+2) { border-bottom: none; }
 .kv-item.full { grid-column: span 2; border-left: none; }
-.kv-label { font-size: 11px; color: var(--text3); margin-bottom: 3px; }
-.kv-value { font-size: 13px; font-weight: 500; }
+.kv-label { font-size: 11px; color: var(--text3); margin-bottom: 3px; display: flex; align-items: center; gap: 4px; }
+.kv-value { font-size: 13px; font-weight: 600; color: var(--text); }
+.desc-label { font-size: 12px; font-weight: 600; color: var(--text3); margin: 12px 0 6px; display: flex; align-items: center; gap: 6px; }
 .desc-box {
-  margin-top: 12px;
-  padding: 10px 12px;
-  background: var(--bg3);
-  border-radius: 8px;
-  font-size: 12px;
-  color: var(--text2);
-  line-height: 1.7;
-  max-height: 72px;
-  overflow: hidden;
-  cursor: pointer;
-  position: relative;
+  padding: 10px 14px;
+  background: rgba(15,23,42,0.6);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 12px; color: var(--text2);
+  line-height: 1.8; max-height: 72px;
+  overflow: hidden; cursor: pointer;
   transition: max-height 0.3s;
 }
-.desc-box.expanded { max-height: 500px; }
-.desc-toggle { font-size: 11px; color: var(--accent2); margin-top: 6px; display: block; }
+.desc-box.expanded { max-height: 400px; }
+
+/* SECTION 2 */
 .metrics-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 8px;
-  margin-bottom: 14px;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(120px,1fr));
+  gap: 8px; margin-bottom: 14px;
 }
-.metric { background: var(--bg3); border-radius: 8px; padding: 10px 12px; }
-.metric-label { font-size: 11px; color: var(--text3); margin-bottom: 3px; }
-.metric-val { font-size: 18px; font-weight: 600; font-family: var(--mono); }
-.metric-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
-.up { color: var(--green); }
-.dn { color: var(--red); }
-.fv-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  gap: 8px;
-  margin-top: 12px;
+.metric {
+  background: linear-gradient(135deg, rgba(15,23,42,0.9), rgba(15,23,42,0.6));
+  border-radius: 10px; padding: 12px;
+  border: 1px solid var(--border);
+  position: relative; overflow: hidden;
 }
-.fv-method {
-  background: var(--bg3);
-  border-radius: 8px;
-  padding: 10px;
-  text-align: center;
+.metric::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(59,130,246,0.4), transparent);
 }
-.fv-method.replaced { opacity: 0.45; }
-.fv-name { font-size: 11px; color: var(--text3); margin-bottom: 4px; }
-.fv-val { font-size: 15px; font-weight: 600; font-family: var(--mono); }
+.metric-emoji { font-size: 16px; margin-bottom: 4px; }
+.metric-label { font-size: 10px; color: var(--text3); margin-bottom: 4px; font-weight: 500; }
+.metric-val { font-size: 18px; font-weight: 700; font-family: var(--mono); color: var(--text); }
+.metric-val.up { color: var(--green); }
+.metric-val.dn { color: var(--red); }
+.metric-val.warn { color: var(--amber); }
+.metric-sub { font-size: 10px; color: var(--text3); margin-top: 2px; }
+.section-label { font-size: 12px; font-weight: 600; color: var(--text3); margin: 12px 0 8px; display: flex; align-items: center; gap: 6px; }
+.fv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px,1fr)); gap: 8px; }
+.fv-card {
+  background: rgba(15,23,42,0.7); border-radius: 10px;
+  padding: 10px; text-align: center;
+  border: 1px solid var(--border);
+}
+.fv-card.replaced { opacity: 0.45; }
+.fv-name { font-size: 10px; color: var(--text3); margin-bottom: 4px; font-weight: 500; }
+.fv-val { font-size: 15px; font-weight: 700; font-family: var(--mono); color: var(--text); }
 .fv-weight { font-size: 10px; color: var(--text3); margin-top: 2px; }
-.future-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin-top: 10px;
+.future-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-top: 8px; }
+.future-item {
+  background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(59,130,246,0.03));
+  border: 1px solid rgba(59,130,246,0.2);
+  border-radius: 10px; padding: 12px; text-align: center;
 }
-.future-item { background: var(--bg3); border-radius: 8px; padding: 10px; text-align: center; }
 .future-label { font-size: 11px; color: var(--text3); margin-bottom: 4px; }
-.future-val { font-size: 17px; font-weight: 600; font-family: var(--mono); color: var(--accent2); }
-.section-divider { font-size: 12px; font-weight: 500; color: var(--text3); margin: 12px 0 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+.future-val { font-size: 18px; font-weight: 700; font-family: var(--mono); color: var(--accent2); }
+
+/* TABLES */
+.q-wrap { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; font-size: 12px; }
 th {
-  padding: 7px 8px;
-  text-align: right;
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--text3);
+  padding: 8px 10px; text-align: right;
+  font-size: 11px; font-weight: 600; color: var(--text3);
   border-bottom: 1px solid var(--border);
-  background: var(--bg3);
-  white-space: nowrap;
+  background: rgba(15,23,42,0.7); white-space: nowrap;
 }
-td {
-  padding: 9px 8px;
-  text-align: right;
-  border-bottom: 1px solid var(--border);
-  font-family: var(--mono);
-}
+td { padding: 10px; text-align: right; border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 12px; }
 tr:last-child td { border-bottom: none; }
 td.label-cell { font-family: 'IBM Plex Sans Arabic', sans-serif; font-size: 13px; color: var(--text2); }
-td.cur { font-weight: 600; color: var(--text); }
-.pct-up { color: var(--green); font-weight: 500; }
-.pct-dn { color: var(--red); font-weight: 500; }
+td.cur { font-weight: 700; color: var(--text); }
+.up { color: var(--green); font-weight: 600; }
+.dn { color: var(--red); font-weight: 600; }
+.pct-up { color: var(--green); font-weight: 600; }
+.pct-dn { color: var(--red); font-weight: 600; }
 .tag-cell { font-family: 'IBM Plex Sans Arabic', sans-serif; font-size: 11px; color: var(--text3); }
-.q-wrap { overflow-x: auto; }
+
+/* SECTION 4 */
+.annual-sub { font-size: 12px; font-weight: 600; color: var(--text3); margin: 12px 0 8px; display: flex; align-items: center; gap: 6px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+
+/* SECTION 5 */
 .verdict-box {
   border-right: 3px solid var(--accent);
   padding: 14px 16px;
-  background: var(--bg3);
-  border-radius: 0 8px 8px 0;
-  line-height: 2;
-  font-size: 13px;
-  margin-bottom: 12px;
+  background: linear-gradient(135deg, rgba(15,23,42,0.7), rgba(15,23,42,0.4));
+  border-radius: 0 10px 10px 0;
+  font-size: 13px; color: var(--text2);
+  line-height: 2.1; margin-bottom: 12px;
 }
-.verdict-label { color: var(--text3); }
+.verdict-box strong { color: var(--text); }
+.verdict-box .v-row { margin-bottom: 2px; }
 .verdict-decision {
-  padding: 12px 16px;
-  background: rgba(59,130,246,0.08);
+  padding: 14px 18px;
+  background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(59,130,246,0.05));
   border: 1px solid rgba(59,130,246,0.25);
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--accent2);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
+  border-radius: 12px; font-size: 15px; font-weight: 700;
+  color: var(--accent2); display: flex; align-items: center; gap: 12px;
+  box-shadow: 0 0 20px rgba(59,130,246,0.08); margin-bottom: 10px;
 }
 .score-badge {
-  width: 28px; height: 28px;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  font-weight: 700;
-  font-family: var(--mono);
+  width: 38px; height: 38px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 700; font-family: var(--mono);
   flex-shrink: 0;
 }
 .reasons { display: flex; flex-wrap: wrap; gap: 6px; }
 .reason-tag {
-  font-size: 11px;
-  padding: 3px 10px;
-  border-radius: 20px;
-  border: 1px solid var(--border);
-  color: var(--text2);
+  font-size: 11px; padding: 4px 12px;
+  border-radius: 20px; border: 1px solid var(--border);
+  color: var(--text2); background: rgba(15,23,42,0.5);
 }
+
+/* SUMMARY BOX */
+.summary-box {
+  margin-top: 12px; padding: 12px 14px;
+  border-radius: 10px; font-size: 12px;
+  line-height: 1.9;
+}
+
 @media (max-width: 600px) {
   .chips { display: none; }
   .search-wrap { max-width: 100%; }
+  .metrics-grid { grid-template-columns: repeat(2,1fr); }
+  .future-grid { grid-template-columns: repeat(3,1fr); }
 }
 @media print {
   .header { position: static; background: #fff; }
   body { background: #fff; color: #000; }
+  body::before, body::after, .glow-bot { display: none; }
   .print-btn, .chips { display: none !important; }
-  .card { border: 1px solid #ddd; background: #fff; }
-  .card-header, .metric, .fv-method, .future-item { background: #f5f5f5; }
+  .card { border: 1px solid #ddd; background: #fff; box-shadow: none; }
 }
 </style>
 </head>
 <body>
+<div class="glow-bot"></div>
 
 <div class="header">
   <div class="logo">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-    </svg>
-    محلل الأسهم السعودية
+    📊 TASI Analyzer Pro
   </div>
   <div class="search-wrap">
-    <input type="text" class="search-input" id="symbolInput" placeholder="رمز السهم · مثال: 2222" maxlength="6">
-    <button class="btn-search" onclick="startAnalysis()">تحليل</button>
+    <input type="text" class="search-input" id="symbolInput" placeholder="🔍 رمز السهم · مثال: 2222" maxlength="6">
+    <button class="btn-search" onclick="startAnalysis()">⚡ تحليل</button>
   </div>
   <div class="chips">
-    <span class="chip" onclick="quickSearch('2222')">2222 · أرامكو</span>
-    <span class="chip" onclick="quickSearch('1120')">1120 · الراجحي</span>
-    <span class="chip" onclick="quickSearch('2010')">2010 · سابك</span>
-    <span class="chip" onclick="quickSearch('1180')">1180 · الأهلي</span>
+    <span class="chip" onclick="quickSearch('2222')">🛢️ أرامكو</span>
+    <span class="chip" onclick="quickSearch('1120')">🏦 الراجحي</span>
+    <span class="chip" onclick="quickSearch('2010')">⚗️ سابك</span>
+    <span class="chip" onclick="quickSearch('1180')">🏛️ الأهلي</span>
   </div>
 </div>
 
 <div class="main">
   <div class="empty" id="emptyState">
-    <div class="empty-icon">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2">
-        <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-      </svg>
-    </div>
-    <div class="empty-title">أداة تحليل الأسهم السعودية</div>
-    <div class="empty-sub">أدخل رمز السهم للحصول على تقرير تحليلي شامل</div>
+    <div class="empty-icon">📈</div>
+    <div class="empty-title">محلل الأسهم السعودية</div>
+    <div class="empty-sub">أدخل رمز السهم أعلاه للحصول على تقرير تحليلي ذكي وشامل</div>
   </div>
 
   <div class="loading" id="loadingState">
     <div class="spinner"></div>
-    <div class="loading-text" id="loadingMsg">جاري جلب البيانات...</div>
+    <div class="loading-text" id="loadingMsg">⏳ جاري التحليل...</div>
   </div>
 
   <div class="results" id="resultsState">
     <div class="results-bar">
       <div class="sym-info">
-        تقرير السهم <span class="sym-tag" id="symTag">—</span>
+        📋 تقرير السهم <span class="sym-tag" id="symTag">—</span>
       </div>
       <button class="print-btn" onclick="window.print()">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="6 9 6 2 18 2 18 9"></polyline>
-          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
-          <rect x="6" y="14" width="12" height="8"></rect>
-        </svg>
-        طباعة
+        🖨️ طباعة
       </button>
     </div>
     <div id="reportContent"></div>
@@ -420,13 +418,11 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzuTLZDXqwuPUQGoWc51
 const TADAWUL_URL = "https://www.saudiexchange.sa/Resources/Reports-v2/DailyFinancialIndicators_en.html";
 
 const MSGS = [
-  "جاري جلب مكرر القطاع من تداول...",
-  "جاري تحليل البيانات المالية...",
-  "جاري حساب القيمة العادلة...",
-  "جاري بناء التقرير الذكي..."
+  "🔍 جاري جلب مكرر القطاع من تداول...",
+  "📡 جاري تحليل البيانات المالية...",
+  "🧮 جاري حساب القيمة العادلة...",
+  "🧠 جاري بناء التقرير الذكي..."
 ];
-
-let msgTimer = null;
 
 function quickSearch(sym) {
   document.getElementById("symbolInput").value = sym;
@@ -440,30 +436,23 @@ document.getElementById("symbolInput").addEventListener("keydown", e => {
 async function startAnalysis() {
   const sym = document.getElementById("symbolInput").value.trim();
   if (!sym) { document.getElementById("symbolInput").focus(); return; }
-
   showLoading();
-
   try {
     setMsg(0);
     const tadawulData = await fetchSectorPE(sym);
-
     setMsg(1);
     let url = `${SCRIPT_URL}?symbol=${encodeURIComponent(sym)}`;
-    if (tadawulData.sectorPE) url += `&sector_pe=${tadawulData.sectorPE}`;
+    if (tadawulData.sectorPE)   url += `&sector_pe=${tadawulData.sectorPE}`;
     if (tadawulData.sectorName) url += `&sector_name=${encodeURIComponent(tadawulData.sectorName)}`;
-
     setMsg(2);
     const res = await fetch(url);
     const data = await res.json();
-
     setMsg(3);
     await sleep(300);
-
     if (data.error) { showError(data.error); return; }
     renderResults(sym, data);
-
   } catch(e) {
-    showError("حدث خطأ في الاتصال: " + e.message);
+    showError("❌ حدث خطأ في الاتصال: " + e.message);
   }
 }
 
@@ -473,52 +462,31 @@ async function fetchSectorPE(symbol) {
     const html = await res.text();
     const doc = new DOMParser().parseFromString(html, "text/html");
     const rows = [...doc.querySelectorAll("table tr")];
-
-    // نمر على الجدول ونبني خريطة: رمز → { sector, pe }
-    // القطاع يأتي بعد شركاته في الجدول (11 خلية)
-    // الشركات 12 خلية
-
     const symbolSectorMap = {};
-    let pendingSymbols = []; // رموز تنتظر تحديد قطاعها
-    let lastSector = null;
-    let lastSectorPE = null;
-
+    let pendingSymbols = [];
     for (const row of rows) {
       const cells = [...row.querySelectorAll("td")];
       if (!cells.length) continue;
       const c0 = cells[0]?.textContent?.trim();
       if (!c0) continue;
-
       if (cells.length === 12 && !isNaN(c0)) {
-        // سطر شركة - أضفه للقائمة المنتظرة
         pendingSymbols.push(c0);
       } else if (cells.length === 11 && isNaN(c0)) {
-        // سطر قطاع - عيّن القطاع لكل الشركات المنتظرة
-        const peRaw = cells[8]?.textContent?.trim().replace(/,/g, "");
-        const pe = parseFloat(peRaw);
-        const sectorName = c0;
-        pendingSymbols.forEach(sym => {
-          symbolSectorMap[sym] = { sectorName, sectorPE: (!isNaN(pe) && pe > 0 && pe < 500) ? pe : null };
+        const pe = parseFloat(cells[8]?.textContent?.trim().replace(/,/g,""));
+        pendingSymbols.forEach(s => {
+          symbolSectorMap[s] = { sectorName: c0, sectorPE: (!isNaN(pe) && pe > 0 && pe < 500) ? pe : null };
         });
         pendingSymbols = [];
       }
     }
-
-    if (symbolSectorMap[symbol]) {
-      return symbolSectorMap[symbol];
-    }
-    return { sectorName: null, sectorPE: null };
-
+    return symbolSectorMap[symbol] || { sectorName: null, sectorPE: null };
   } catch(e) {
     console.warn("تعذر جلب بيانات تداول:", e);
     return { sectorName: null, sectorPE: null };
   }
 }
 
-function setMsg(i) {
-  document.getElementById("loadingMsg").textContent = MSGS[i];
-}
-
+function setMsg(i) { document.getElementById("loadingMsg").textContent = MSGS[i]; }
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 function showLoading() {
@@ -526,14 +494,12 @@ function showLoading() {
   document.getElementById("resultsState").style.display = "none";
   document.getElementById("loadingState").style.display = "flex";
 }
-
 function showError(msg) {
   document.getElementById("loadingState").style.display = "none";
   document.getElementById("emptyState").style.display = "flex";
   document.querySelector(".empty-title").textContent = "حدث خطأ";
   document.querySelector(".empty-sub").textContent = msg;
 }
-
 function renderResults(sym, data) {
   document.getElementById("loadingState").style.display = "none";
   document.getElementById("symTag").textContent = sym;
@@ -543,7 +509,6 @@ function renderResults(sym, data) {
   r.style.flexDirection = "column";
 }
 
-// ─── Formatters ───────────────────────────────────────────
 function fmt(n) {
   if (n == null) return "—";
   const abs = Math.abs(n);
@@ -552,105 +517,91 @@ function fmt(n) {
   if (abs >= 1e6)  return (n/1e6).toFixed(2) + " مليون";
   return Number(n).toLocaleString("en");
 }
-
 function pct(n) {
   if (n == null) return "<span style='color:var(--text3)'>—</span>";
   const sign = n >= 0 ? "+" : "";
-  const cls = n >= 0 ? "pct-up" : "pct-dn";
-  return `<span class="${cls}">${sign}${n}%</span>`;
+  return `<span class="${n >= 0 ? 'pct-up' : 'pct-dn'}">${sign}${n}%</span>`;
 }
-
 function consensusAr(c) {
   if (!c) return "—";
-  const m = { buy:"شراء", sell:"بيع", hold:"احتفاظ", "strong buy":"شراء قوي", "strong sell":"بيع قوي" };
+  const m = { buy:"شراء", sell:"بيع", hold:"احتفاظ", "strong buy":"شراء قوي", "strong sell":"بيع قوي", none:"غير محدد" };
   return m[c.toLowerCase()] || c;
 }
-
 function consBadge(c) {
   if (!c) return "—";
   const l = c.toLowerCase();
   const cls = l.includes("buy") ? "badge-buy" : l === "sell" ? "badge-sell" : "badge-hold";
-  return `<span class="badge ${cls}">${consensusAr(c)}</span>`;
+  const emoji = l.includes("buy") ? "✅" : l === "sell" ? "🔴" : "🟡";
+  return `<span class="badge ${cls}">${emoji} ${consensusAr(c)}</span>`;
 }
 
-// ─── Report Builder ───────────────────────────────────────
 function buildReport(d) {
-  return [
-    buildS1(d.section1, d.section2),
-    buildS2(d.section2),
-    buildS3(d.section3),
-    buildS4(d.section4),
-    buildS5(d.section5)
-  ].join("");
+  return [buildS1(d.section1), buildS2(d.section2), buildS3(d.section3), buildS4(d.section4), buildS5(d.section5)].join("");
 }
 
-function buildS1(s1, s2) {
+function buildS1(s1) {
   const catCls = s1.stockCategory === "توزيعات" ? "badge-dividend" : "badge-growth";
+  const catEmoji = s1.stockCategory === "توزيعات" ? "💰" : "🚀";
   return `<div class="card">
-    <div class="card-header"><div class="card-title"><span class="card-num">١</span> بطاقة تعريف السهم</div></div>
+    <div class="card-header"><span class="card-emoji">🏢</span><span class="card-title">بطاقة تعريف السهم</span></div>
     <div class="card-body">
       <div class="s1-top">
         <div>
           <div class="s1-name">${s1.companyName}</div>
-          <div class="s1-sub">${s1.sector} · ${s1.symbol}</div>
+          <div class="s1-sub"><span>🏭 ${s1.sector}</span><span style="color:var(--text3)">·</span><span>${s1.symbol}</span></div>
         </div>
-        <span class="badge ${catCls}">${s1.stockCategory}</span>
+        <span class="badge ${catCls}">${catEmoji} ${s1.stockCategory}</span>
       </div>
       <div class="kv-grid">
-        <div class="kv-item"><div class="kv-label">القيمة السوقية</div><div class="kv-value">${fmt(s1.marketCap)} ريال</div></div>
-        <div class="kv-item"><div class="kv-label">القيمة الدفترية للسهم</div><div class="kv-value">${s1.bookValuePerShare} ريال</div></div>
-        <div class="kv-item"><div class="kv-label">مكرر الربحية TTM</div><div class="kv-value">${s1.peTTM ? s1.peTTM+'x' : '—'}</div></div>
-        <div class="kv-item"><div class="kv-label">إجماع المحللين</div><div class="kv-value">${consBadge(s1.analystConsensus)}</div></div>
-        <div class="kv-item full"><div class="kv-label">متوسط السعر المستهدف</div><div class="kv-value">${s1.analystTarget} ريال</div></div>
+        <div class="kv-item"><div class="kv-label">📈 القيمة السوقية</div><div class="kv-value">${fmt(s1.marketCap)} ريال</div></div>
+        <div class="kv-item"><div class="kv-label">📚 القيمة الدفترية للسهم</div><div class="kv-value">${s1.bookValuePerShare} ريال</div></div>
+        <div class="kv-item"><div class="kv-label">🔢 مكرر الربحية TTM</div><div class="kv-value">${s1.peTTM ? s1.peTTM+'x' : '—'}</div></div>
+        <div class="kv-item"><div class="kv-label">🤝 إجماع المحللين</div><div class="kv-value">${consBadge(s1.analystConsensus)}</div></div>
+        <div class="kv-item full"><div class="kv-label">🎯 متوسط السعر المستهدف</div><div class="kv-value">${s1.analystTarget} ريال</div></div>
       </div>
-      ${s1.description ? `
-      <div style="margin-top:12px">
-        <div class="kv-label" style="margin-bottom:6px">الوصف العام</div>
-        <div class="desc-box" id="descBox" onclick="this.classList.toggle('expanded')">${s1.description}</div>
-      </div>` : ''}
+      ${s1.description ? `<div class="desc-label">📝 الوصف العام</div><div class="desc-box" onclick="this.classList.toggle('expanded')">${s1.description}</div>` : ''}
     </div>
   </div>`;
 }
 
 function buildS2(s2) {
   const vColor = s2.fairValueVerdict === "مقوم بأقل من قيمته" ? "var(--green)" :
-                 s2.fairValueVerdict === "مبالغ في تقييمه" ? "var(--red)" : "var(--amber)";
-
-  const methods = { dcf:"DCF", ddm:"DDM", sahmk:"سهمك", sectorPE:"مكرر القطاع" };
+                 s2.fairValueVerdict === "مبالغ في تقييمه"   ? "var(--red)"   : "var(--amber)";
+  const vEmoji = s2.fairValueVerdict === "مقوم بأقل من قيمته" ? "🟢" :
+                 s2.fairValueVerdict === "مبالغ في تقييمه"   ? "🔴" : "🟡";
+  const methods = { dcf:"DCF", ddm:"DDM", sahmk:"⚖️ سهمك", sectorPE:"🏭 مكرر القطاع" };
   const fvCards = Object.entries(s2.fairValueDetail || {}).map(([k,v]) =>
-    `<div class="fv-method ${v.replaced?'replaced':''}">
+    `<div class="fv-card ${v.replaced?'replaced':''}">
       <div class="fv-name">${methods[k]||k}${v.replaced?' ↻':''}</div>
       <div class="fv-val">${v.value}</div>
       <div class="fv-weight">${v.weight}%</div>
     </div>`).join("");
-
   const fp = s2.futurePrice;
   const futureHtml = fp ? `
-    <div style="margin-top:14px">
-      <div class="kv-label" style="margin-bottom:8px">السعر المستقبلي المتوقع (ريال)</div>
-      <div class="future-grid">
-        <div class="future-item"><div class="future-label">بدون نمو</div><div class="future-val">${fp.base}</div></div>
-        <div class="future-item"><div class="future-label">نمو 10%</div><div class="future-val">${fp.grow10}</div></div>
-        <div class="future-item"><div class="future-label">نمو 20%</div><div class="future-val">${fp.grow20}</div></div>
-      </div>
+    <div class="section-label">🚀 السعر المستقبلي المتوقع (ريال)</div>
+    <div class="future-grid">
+      <div class="future-item"><div class="future-label">⚡ بدون نمو</div><div class="future-val">${fp.base}</div></div>
+      <div class="future-item"><div class="future-label">📈 نمو 10%</div><div class="future-val">${fp.grow10}</div></div>
+      <div class="future-item"><div class="future-label">🚀 نمو 20%</div><div class="future-val">${fp.grow20}</div></div>
     </div>` : "";
-
+  const dyVal = s2.dividendYield || 0;
+  const dyClass = dyVal > 5 ? "up" : dyVal > 0 ? "" : "";
   return `<div class="card">
-    <div class="card-header"><div class="card-title"><span class="card-num">٢</span> بيانات السوق والتقييم</div></div>
+    <div class="card-header"><span class="card-emoji">💹</span><span class="card-title">بيانات السوق والتقييم</span></div>
     <div class="card-body">
       <div class="metrics-grid">
-        <div class="metric"><div class="metric-label">سعر الإغلاق</div><div class="metric-val">${s2.price}</div><div class="metric-sub">ريال</div></div>
-        <div class="metric"><div class="metric-label">مكرر الربحية TTM</div><div class="metric-val">${s2.peTTM?s2.peTTM+'x':'—'}</div><div class="metric-sub">${s2.peComparison?.text||''}</div></div>
-        <div class="metric"><div class="metric-label">عائد التوزيعات</div><div class="metric-val ${s2.dividendYield>0?'up':''}">${s2.dividendYield||'—'}${s2.dividendYield?'%':''}</div><div class="metric-sub">${s2.payoutVerdict||''}</div></div>
-        <div class="metric"><div class="metric-label">القيمة العادلة</div><div class="metric-val">${s2.fairValue||'—'}</div><div class="metric-sub" style="color:${vColor}">${s2.fairValueVerdict||''}</div></div>
+        <div class="metric"><div class="metric-emoji">💵</div><div class="metric-label">سعر الإغلاق</div><div class="metric-val">${s2.price}</div><div class="metric-sub">ريال</div></div>
+        <div class="metric"><div class="metric-emoji">📊</div><div class="metric-label">مكرر الربحية TTM</div><div class="metric-val">${s2.peTTM?s2.peTTM+'x':'—'}</div><div class="metric-sub">${s2.peComparison?.text||'—'}</div></div>
+        <div class="metric"><div class="metric-emoji">🎁</div><div class="metric-label">عائد التوزيعات</div><div class="metric-val ${dyClass}">${dyVal||'—'}${dyVal?'%':''}</div><div class="metric-sub">${s2.payoutVerdict||''}</div></div>
+        <div class="metric"><div class="metric-emoji">⚖️</div><div class="metric-label">القيمة العادلة</div><div class="metric-val">${s2.fairValue||'—'}</div><div class="metric-sub" style="color:${vColor}">${vEmoji} ${s2.fairValueVerdict||''}</div></div>
       </div>
-      <div class="kv-grid" style="margin-bottom:12px">
-        <div class="kv-item"><div class="kv-label">نطاق المحللين</div><div class="kv-value">${s2.analystLow} – ${s2.analystHigh} ريال</div></div>
-        <div class="kv-item"><div class="kv-label">مكرر القطاع</div><div class="kv-value">${s2.sectorPE?s2.sectorPE+'x':'—'}</div></div>
-        <div class="kv-item"><div class="kv-label">نسبة توزيع الأرباح</div><div class="kv-value">${s2.payoutRatio||'—'}${s2.payoutRatio?'%':''}</div></div>
-        <div class="kv-item"><div class="kv-label">تقييم القيمة العادلة</div><div class="kv-value" style="color:${vColor}">${s2.fairValueVerdict||'—'}</div></div>
+      <div class="kv-grid" style="margin-bottom:14px">
+        <div class="kv-item"><div class="kv-label">📉 نطاق المحللين</div><div class="kv-value">${s2.analystLow} – ${s2.analystHigh} ريال</div></div>
+        <div class="kv-item"><div class="kv-label">🏭 مكرر القطاع</div><div class="kv-value">${s2.sectorPE?s2.sectorPE+'x':'—'}</div></div>
+        <div class="kv-item"><div class="kv-label">📤 نسبة توزيع الأرباح</div><div class="kv-value">${s2.payoutRatio||'—'}${s2.payoutRatio?'%':''}</div></div>
+        <div class="kv-item"><div class="kv-label">🎯 تقييم السعر</div><div class="kv-value" style="color:${vColor}">${vEmoji} ${s2.fairValueVerdict||'—'}</div></div>
       </div>
-      <div class="kv-label" style="margin-bottom:8px">تفصيل القيمة العادلة</div>
+      <div class="section-label">🔬 تفصيل القيمة العادلة</div>
       <div class="fv-grid">${fvCards}</div>
       ${futureHtml}
     </div>
@@ -668,34 +619,31 @@ function buildS3(s3) {
     <td>${pct(r.qoq)}</td>
     <td>${pct(r.yoy)}</td>
   </tr>`).join("");
-
-  // خلاصة التحليل
   const sum = s3.summary;
   let summaryHtml = "";
   if (sum) {
     const alertColor  = sum.alert ? "var(--red)"  : "var(--green)";
-    const alertBg     = sum.alert ? "rgba(239,68,68,0.08)" : "rgba(16,185,129,0.08)";
-    const alertBorder = sum.alert ? "rgba(239,68,68,0.3)"  : "rgba(16,185,129,0.3)";
-    const icon        = sum.alert ? "⚠" : "✓";
+    const alertBg     = sum.alert ? "rgba(239,68,68,0.08)"  : "rgba(16,185,129,0.08)";
+    const alertBorder = sum.alert ? "rgba(239,68,68,0.25)"  : "rgba(16,185,129,0.25)";
+    const icon        = sum.alert ? "⚠️" : "✅";
     summaryHtml = `
-    <div style="margin-top:12px; padding:12px 14px; background:${alertBg}; border:1px solid ${alertBorder}; border-radius:8px;">
-      <div style="font-size:12px; font-weight:600; color:${alertColor}; margin-bottom:6px;">${icon} خلاصة التحليل</div>
-      <div style="font-size:12px; color:var(--text2); line-height:1.9;">${sum.text}</div>
-      <div style="margin-top:8px; font-size:12px; font-weight:500; color:${alertColor};">${sum.verdict}</div>
+    <div class="summary-box" style="background:${alertBg};border:1px solid ${alertBorder}">
+      <div style="font-size:12px;font-weight:700;color:${alertColor};margin-bottom:6px">${icon} خلاصة التحليل</div>
+      <div style="font-size:12px;color:var(--text2)">${sum.text}</div>
+      <div style="margin-top:8px;font-size:12px;font-weight:600;color:${alertColor}">${sum.verdict}</div>
     </div>`;
   }
-
   return `<div class="card">
-    <div class="card-header"><div class="card-title"><span class="card-num">٣</span> التحليل المالي الربع سنوي</div></div>
+    <div class="card-header"><span class="card-emoji">📊</span><span class="card-title">التحليل المالي الربع سنوي</span></div>
     <div class="card-body">
       <div class="q-wrap">
         <table>
           <thead><tr>
             <th>البند</th>
-            <th>${l.current||''}<br><span style="font-weight:400;color:var(--text3)">الربع الحالي</span></th>
-            <th>${l.previous||''}<br><span style="font-weight:400;color:var(--text3)">الربع السابق</span></th>
-            <th>${l.similar||''}<br><span style="font-weight:400;color:var(--text3)">الربع المماثل</span></th>
-            <th>نمو QoQ</th><th>نمو YoY</th>
+            <th>${l.current||''}<br><span style="font-weight:400;color:var(--text3);font-size:10px">الربع الحالي</span></th>
+            <th>${l.previous||''}<br><span style="font-weight:400;color:var(--text3);font-size:10px">الربع السابق</span></th>
+            <th>${l.similar||''}<br><span style="font-weight:400;color:var(--text3);font-size:10px">الربع المماثل</span></th>
+            <th>📈 QoQ</th><th>📅 YoY</th>
           </tr></thead>
           <tbody>${rows}</tbody>
         </table>
@@ -708,27 +656,24 @@ function buildS3(s3) {
 function buildS4(s4) {
   if (!s4?.profitability?.length) return "";
   const y = s4.years || {};
-
   const profRows = s4.profitability.map(r => `<tr>
     <td class="label-cell">${r.name}</td>
     <td class="${r.isPercent?(r.current>=r.previous?'pct-up':'pct-dn'):''}">${r.isPercent?r.current+'%':fmt(r.current)}</td>
     <td>${r.isPercent?r.previous+'%':fmt(r.previous)}</td>
     <td class="tag-cell">${r.analysis||'—'}</td>
   </tr>`).join("");
-
   const levRows = s4.leverage.map(r => `<tr>
     <td class="label-cell">${r.name}</td>
     <td>${fmt(r.current)}</td>
     <td>${fmt(r.previous)}</td>
     <td class="tag-cell">${r.analysis||'—'}</td>
   </tr>`).join("");
-
   return `<div class="card">
-    <div class="card-header"><div class="card-title"><span class="card-num">٤</span> التحليل السنوي</div></div>
+    <div class="card-header"><span class="card-emoji">📋</span><span class="card-title">التحليل السنوي</span></div>
     <div class="card-body">
-      <div class="section-divider">أ · الميزانية والربحية</div>
+      <div class="annual-sub">📊 أ · الميزانية والربحية</div>
       <table><thead><tr><th>البند</th><th>${y.current}</th><th>${y.previous}</th><th>التحليل</th></tr></thead><tbody>${profRows}</tbody></table>
-      <div class="section-divider" style="margin-top:14px">ب · المديونية والتدفق النقدي</div>
+      <div class="annual-sub" style="margin-top:14px">💳 ب · المديونية والتدفق النقدي</div>
       <table><thead><tr><th>البند</th><th>${y.current}</th><th>${y.previous}</th><th>التحليل</th></tr></thead><tbody>${levRows}</tbody></table>
     </div>
   </div>`;
@@ -737,20 +682,21 @@ function buildS4(s4) {
 function buildS5(s5) {
   const sc = s5.score;
   const scColor = sc >= 7 ? "var(--green)" : sc >= 4 ? "var(--amber)" : "var(--red)";
+  const scBg    = sc >= 7 ? "rgba(16,185,129,0.15)" : sc >= 4 ? "rgba(245,158,11,0.15)" : "rgba(239,68,68,0.15)";
+  const decEmoji = sc >= 7 ? "🎯" : sc >= 4 ? "📌" : "⚠️";
   const reasons = (s5.reasons||[]).map(r=>`<span class="reason-tag">${r}</span>`).join("");
-
   return `<div class="card">
-    <div class="card-header"><div class="card-title"><span class="card-num">٥</span> التقرير الذكي · AI Verdict</div></div>
+    <div class="card-header"><span class="card-emoji">🧠</span><span class="card-title">التقرير الذكي · AI Verdict</span></div>
     <div class="card-body">
       <div class="verdict-box">
-        <div><span class="verdict-label">التصنيف: </span>يُصنف السهم كأصل <strong>${s5.category}</strong>.</div>
-        <div><span class="verdict-label">التقييم: </span>يتداول السهم <strong>${s5.valuation}</strong> عن القيمة العادلة، مع إجماع للمحللين يميل نحو <strong>${consensusAr(s5.consensus)}</strong>.</div>
-        <div><span class="verdict-label">الأداء: </span>يظهر اتجاه <strong>${s5.revenueDir}</strong> في الإيرادات على المدى السنوي.</div>
-        <div><span class="verdict-label">السلامة: </span>المركز المالي <strong>${s5.financial}</strong> وفقاً لنسبة المديونية وجودة التدفقات النقدية.</div>
+        <div class="v-row">🏷️ <span style="color:var(--text3)">التصنيف: </span>يُصنف السهم كأصل <strong>${s5.category}</strong>.</div>
+        <div class="v-row">⚖️ <span style="color:var(--text3)">التقييم: </span>يتداول السهم <strong>${s5.valuation}</strong> عن القيمة العادلة، مع إجماع للمحللين يميل نحو <strong>${consensusAr(s5.consensus)}</strong>.</div>
+        <div class="v-row">📈 <span style="color:var(--text3)">الأداء: </span>يظهر اتجاه <strong>${s5.revenueDir}</strong> في الإيرادات على المدى السنوي.</div>
+        <div class="v-row">🛡️ <span style="color:var(--text3)">السلامة: </span>المركز المالي <strong>${s5.financial}</strong> وفقاً لنسبة المديونية وجودة التدفقات النقدية.</div>
       </div>
       <div class="verdict-decision">
-        <span class="score-badge" style="background:${scColor}22;color:${scColor}">${sc}</span>
-        ${s5.decision}
+        <span class="score-badge" style="background:${scBg};color:${scColor};border:1px solid ${scColor}40">${sc}</span>
+        ${decEmoji} ${s5.decision}
       </div>
       <div class="reasons">${reasons}</div>
     </div>
