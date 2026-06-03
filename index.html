@@ -445,11 +445,12 @@ async function startAnalysis() {
 
   try {
     setMsg(0);
-    const sectorPE = await fetchSectorPE(sym);
+    const tadawulData = await fetchSectorPE(sym);
 
     setMsg(1);
     let url = `${SCRIPT_URL}?symbol=${encodeURIComponent(sym)}`;
-    if (sectorPE) url += `&sector_pe=${sectorPE}`;
+    if (tadawulData.sectorPE) url += `&sector_pe=${tadawulData.sectorPE}`;
+    if (tadawulData.sectorName) url += `&sector_name=${encodeURIComponent(tadawulData.sectorName)}`;
 
     setMsg(2);
     const res = await fetch(url);
@@ -482,7 +483,7 @@ async function fetchSectorPE(symbol) {
       const c0 = cells[0]?.textContent?.trim();
       if (!c0) continue;
 
-      // سطر قطاع: الخلية الأولى نص وليس رقم، والخلية الثانية فارغة أو نص
+      // سطر قطاع
       if (isNaN(c0) && cells.length >= 9) {
         const peRaw = cells[8]?.textContent?.trim().replace(/,/g, "");
         const pe = parseFloat(peRaw);
@@ -493,15 +494,15 @@ async function fetchSectorPE(symbol) {
         continue;
       }
 
-      // سطر شركة: الخلية الأولى رقم
+      // سطر شركة
       if (c0 === symbol && currentSector) {
-        return sectorPEMap[currentSector] || null;
+        return { sectorName: currentSector, sectorPE: sectorPEMap[currentSector] || null };
       }
     }
-    return null;
+    return { sectorName: null, sectorPE: null };
   } catch(e) {
-    console.warn("سهمك: تعذر جلب مكرر القطاع", e);
-    return null;
+    console.warn("تعذر جلب بيانات تداول:", e);
+    return { sectorName: null, sectorPE: null };
   }
 }
 
