@@ -472,10 +472,16 @@ async function fetchSectorPE(symbol) {
     const res = await fetch(TADAWUL_URL);
     const html = await res.text();
     const doc = new DOMParser().parseFromString(html, "text/html");
-    const rows = doc.querySelectorAll("table tr");
+    const rows = [...doc.querySelectorAll("table tr")];
 
-    let currentSector = null;
-    let sectorPEMap = {};
+    // نمر على الجدول ونبني خريطة: رمز → { sector, pe }
+    // القطاع يأتي بعد شركاته في الجدول (11 خلية)
+    // الشركات 12 خلية
+
+    const symbolSectorMap = {};
+    let pendingSymbols = []; // رموز تنتظر تحديد قطاعها
+    let lastSector = null;
+    let lastSectorPE = null;
 
     for (const row of rows) {
       const cells = [...row.querySelectorAll("td")];
@@ -483,23 +489,26 @@ async function fetchSectorPE(symbol) {
       const c0 = cells[0]?.textContent?.trim();
       if (!c0) continue;
 
-      // سطر قطاع
-      if (isNaN(c0) && cells.length >= 9) {
+      if (cells.length === 12 && !isNaN(c0)) {
+        // سطر شركة - أضفه للقائمة المنتظرة
+        pendingSymbols.push(c0);
+      } else if (cells.length === 11 && isNaN(c0)) {
+        // سطر قطاع - عيّن القطاع لكل الشركات المنتظرة
         const peRaw = cells[8]?.textContent?.trim().replace(/,/g, "");
         const pe = parseFloat(peRaw);
-        if (!isNaN(pe) && pe > 0 && pe < 500) {
-          currentSector = c0;
-          sectorPEMap[c0] = pe;
-        }
-        continue;
-      }
-
-      // سطر شركة
-      if (c0 === symbol && currentSector) {
-        return { sectorName: currentSector, sectorPE: sectorPEMap[currentSector] || null };
+        const sectorName = c0;
+        pendingSymbols.forEach(sym => {
+          symbolSectorMap[sym] = { sectorName, sectorPE: (!isNaN(pe) && pe > 0 && pe < 500) ? pe : null };
+        });
+        pendingSymbols = [];
       }
     }
+
+    if (symbolSectorMap[symbol]) {
+      return symbolSectorMap[symbol];
+    }
     return { sectorName: null, sectorPE: null };
+
   } catch(e) {
     console.warn("تعذر جلب بيانات تداول:", e);
     return { sectorName: null, sectorPE: null };
