@@ -416,7 +416,7 @@ td.cur { font-weight: 600; color: var(--text); }
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx9X1PrTw2ClDEFLXzm_oYhoeObmQMA1EinmOPj3jtZI7TFBzO8ziOt11M5tGendM_G/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwFoyGrWlOQ0JIiZ9mUR2-ecEMy7_Y8PSHENZo--cTya1ivd26pUspxXXliXNKutDo/exec";
 const TADAWUL_URL = "https://www.saudiexchange.sa/Resources/Reports-v2/DailyFinancialIndicators_en.html";
 
 const MSGS = [
@@ -603,7 +603,11 @@ function buildS1(s1, s2) {
         <div class="kv-item"><div class="kv-label">إجماع المحللين</div><div class="kv-value">${consBadge(s1.analystConsensus)}</div></div>
         <div class="kv-item full"><div class="kv-label">متوسط السعر المستهدف</div><div class="kv-value">${s1.analystTarget} ريال</div></div>
       </div>
-      <div class="desc-box" id="descBox" onclick="this.classList.toggle('expanded')">${s1.description || '—'}</div>
+      ${s1.description ? `
+      <div style="margin-top:12px">
+        <div class="kv-label" style="margin-bottom:6px">الوصف العام</div>
+        <div class="desc-box" id="descBox" onclick="this.classList.toggle('expanded')">${s1.description}</div>
+      </div>` : ''}
     </div>
   </div>`;
 }
@@ -663,8 +667,28 @@ function buildS3(s3) {
     <td>${fmt(r.similar)}</td>
     <td>${pct(r.qoq)}</td>
     <td>${pct(r.yoy)}</td>
-    <td class="tag-cell">${r.analysis||'—'}</td>
   </tr>`).join("");
+
+  // التحليل الموسمي
+  const sea = s3.seasonal;
+  let seasonalHtml = "";
+  if (sea) {
+    const alertColor = sea.alert ? "var(--red)" : "var(--green)";
+    const alertBg    = sea.alert ? "rgba(239,68,68,0.08)" : "rgba(16,185,129,0.08)";
+    const alertBorder = sea.alert ? "rgba(239,68,68,0.3)" : "rgba(16,185,129,0.3)";
+    const years = sea.yearsCompared?.join("، ") || "";
+    seasonalHtml = `
+    <div style="margin-top:14px; padding:12px 14px; background:${alertBg}; border:1px solid ${alertBorder}; border-radius:8px;">
+      <div style="font-size:12px; font-weight:500; color:${alertColor}; margin-bottom:8px;">
+        ${sea.alert ? '⚠ تنبيه موسمي' : '✓ التحليل الموسمي'}
+      </div>
+      <div style="font-size:12px; color:var(--text2); line-height:1.8;">
+        <div>مقارنة ${sea.currentQuarter} بنفس الربع في السنوات: <strong>${years}</strong></div>
+        <div>نمو الإيرادات الحالي YoY: <strong>${sea.currentRevenueGrowth != null ? (sea.currentRevenueGrowth > 0 ? '+' : '') + sea.currentRevenueGrowth + '%' : '—'}</strong> · متوسط تاريخي: <strong>${sea.avgRevenueGrowth != null ? sea.avgRevenueGrowth + '%' : '—'}</strong></div>
+        <div style="margin-top:6px; color:${alertColor}; font-weight:500;">${sea.verdict}</div>
+      </div>
+    </div>`;
+  }
 
   return `<div class="card">
     <div class="card-header"><div class="card-title"><span class="card-num">٣</span> التحليل المالي الربع سنوي</div></div>
@@ -676,11 +700,12 @@ function buildS3(s3) {
             <th>${l.current||''}<br><span style="font-weight:400;color:var(--text3)">الربع الحالي</span></th>
             <th>${l.previous||''}<br><span style="font-weight:400;color:var(--text3)">الربع السابق</span></th>
             <th>${l.similar||''}<br><span style="font-weight:400;color:var(--text3)">الربع المماثل</span></th>
-            <th>نمو QoQ</th><th>نمو YoY</th><th>التحليل</th>
+            <th>نمو QoQ</th><th>نمو YoY</th>
           </tr></thead>
           <tbody>${rows}</tbody>
         </table>
       </div>
+      ${seasonalHtml}
     </div>
   </div>`;
 }
