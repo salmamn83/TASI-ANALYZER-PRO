@@ -416,7 +416,7 @@ td.cur { font-weight: 600; color: var(--text); }
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwFoyGrWlOQ0JIiZ9mUR2-ecEMy7_Y8PSHENZo--cTya1ivd26pUspxXXliXNKutDo/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzuTLZDXqwuPUQGoWc51kQitICUAD8iobngFSNol6oeuqFc283iude0HtoHXyYLvA6E/exec";
 const TADAWUL_URL = "https://www.saudiexchange.sa/Resources/Reports-v2/DailyFinancialIndicators_en.html";
 
 const MSGS = [
@@ -669,24 +669,19 @@ function buildS3(s3) {
     <td>${pct(r.yoy)}</td>
   </tr>`).join("");
 
-  // التحليل الموسمي
-  const sea = s3.seasonal;
-  let seasonalHtml = "";
-  if (sea) {
-    const alertColor = sea.alert ? "var(--red)" : "var(--green)";
-    const alertBg    = sea.alert ? "rgba(239,68,68,0.08)" : "rgba(16,185,129,0.08)";
-    const alertBorder = sea.alert ? "rgba(239,68,68,0.3)" : "rgba(16,185,129,0.3)";
-    const years = sea.yearsCompared?.join("، ") || "";
-    seasonalHtml = `
-    <div style="margin-top:14px; padding:12px 14px; background:${alertBg}; border:1px solid ${alertBorder}; border-radius:8px;">
-      <div style="font-size:12px; font-weight:500; color:${alertColor}; margin-bottom:8px;">
-        ${sea.alert ? '⚠ تنبيه موسمي' : '✓ التحليل الموسمي'}
-      </div>
-      <div style="font-size:12px; color:var(--text2); line-height:1.8;">
-        <div>مقارنة ${sea.currentQuarter} بنفس الربع في السنوات: <strong>${years}</strong></div>
-        <div>نمو الإيرادات الحالي YoY: <strong>${sea.currentRevenueGrowth != null ? (sea.currentRevenueGrowth > 0 ? '+' : '') + sea.currentRevenueGrowth + '%' : '—'}</strong> · متوسط تاريخي: <strong>${sea.avgRevenueGrowth != null ? sea.avgRevenueGrowth + '%' : '—'}</strong></div>
-        <div style="margin-top:6px; color:${alertColor}; font-weight:500;">${sea.verdict}</div>
-      </div>
+  // خلاصة التحليل
+  const sum = s3.summary;
+  let summaryHtml = "";
+  if (sum) {
+    const alertColor  = sum.alert ? "var(--red)"  : "var(--green)";
+    const alertBg     = sum.alert ? "rgba(239,68,68,0.08)" : "rgba(16,185,129,0.08)";
+    const alertBorder = sum.alert ? "rgba(239,68,68,0.3)"  : "rgba(16,185,129,0.3)";
+    const icon        = sum.alert ? "⚠" : "✓";
+    summaryHtml = `
+    <div style="margin-top:12px; padding:12px 14px; background:${alertBg}; border:1px solid ${alertBorder}; border-radius:8px;">
+      <div style="font-size:12px; font-weight:600; color:${alertColor}; margin-bottom:6px;">${icon} خلاصة التحليل</div>
+      <div style="font-size:12px; color:var(--text2); line-height:1.9;">${sum.text}</div>
+      <div style="margin-top:8px; font-size:12px; font-weight:500; color:${alertColor};">${sum.verdict}</div>
     </div>`;
   }
 
@@ -705,7 +700,7 @@ function buildS3(s3) {
           <tbody>${rows}</tbody>
         </table>
       </div>
-      ${seasonalHtml}
+      ${summaryHtml}
     </div>
   </div>`;
 }
