@@ -100,6 +100,16 @@ body::after {
 }
 .btn-search:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(59,130,246,0.4); }
 .btn-search:active { transform: scale(0.98); }
+.btn-stop {
+  height: 40px; padding: 0 20px;
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+  border: none; border-radius: 10px;
+  color: #fff; font-family: inherit; font-size: 14px; font-weight: 600;
+  cursor: pointer; white-space: nowrap;
+  box-shadow: 0 4px 15px rgba(239,68,68,0.3); transition: all 0.2s;
+  display: none;
+}
+.btn-stop:hover { opacity: 0.9; }
 .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-right: auto; }
 .chip {
   font-size: 11px; color: var(--text3);
@@ -154,8 +164,6 @@ body::after {
 .card-emoji { font-size: 15px; }
 .card-title { font-size: 11px; font-weight: 600; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; }
 .card-body { padding: 14px 16px; }
-
-/* S1 */
 .s1-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
 .s1-name { font-size: 22px; font-weight: 700; background: linear-gradient(135deg,#f1f5f9,#94a3b8); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
 .s1-sub { font-size: 12px; color: var(--text3); margin-top: 3px; display: flex; align-items: center; gap: 6px; }
@@ -165,8 +173,6 @@ body::after {
 .badge-buy  { background: rgba(16,185,129,0.12); color: #10b981; border: 1px solid rgba(16,185,129,0.25); }
 .badge-hold { background: rgba(245,158,11,0.12); color: #f59e0b; border: 1px solid rgba(245,158,11,0.25); }
 .badge-sell { background: rgba(239,68,68,0.12);  color: #ef4444; border: 1px solid rgba(239,68,68,0.25); }
-
-/* kv-grid 3 أعمدة للقسم 1 */
 .kv-grid {
   display: grid; grid-template-columns: 1fr 1fr 1fr;
   border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
@@ -185,8 +191,6 @@ body::after {
 .kv-value.up { color: var(--green); }
 .kv-value.dn { color: var(--red); }
 .kv-value.warn { color: var(--amber); }
-
-/* kv-grid 2 أعمدة للأقسام الأخرى */
 .kv-grid-2 {
   display: grid; grid-template-columns: 1fr 1fr;
   border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
@@ -195,7 +199,6 @@ body::after {
 .kv-grid-2 .kv-item:nth-child(odd)  { border-left: none; }
 .kv-grid-2 .kv-item:nth-last-child(-n+2) { border-bottom: none; }
 .kv-grid-2 .kv-item.full { grid-column: span 2; border-left: none; }
-
 .desc-label { font-size: 12px; font-weight: 600; color: var(--text3); margin: 12px 0 6px; display: flex; align-items: center; gap: 6px; }
 .desc-box {
   padding: 10px 14px;
@@ -204,8 +207,6 @@ body::after {
   max-height: 72px; overflow: hidden; cursor: pointer; transition: max-height 0.3s;
 }
 .desc-box.expanded { max-height: 400px; }
-
-/* RSI badge */
 .rsi-badge {
   display: inline-block; font-size: 11px; font-weight: 600;
   padding: 2px 8px; border-radius: 12px; margin-right: 4px;
@@ -213,8 +214,6 @@ body::after {
 .rsi-ob  { background: rgba(239,68,68,0.15);  color: var(--red);   border: 1px solid rgba(239,68,68,0.3); }
 .rsi-os  { background: rgba(16,185,129,0.15); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
 .rsi-neu { background: rgba(71,85,105,0.3);   color: var(--text2); border: 1px solid rgba(71,85,105,0.4); }
-
-/* S2 */
 .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px,1fr)); gap: 8px; margin-bottom: 14px; }
 .metric {
   background: linear-gradient(135deg, rgba(15,23,42,0.9), rgba(15,23,42,0.6));
@@ -246,8 +245,6 @@ body::after {
 }
 .future-label { font-size: 11px; color: var(--text3); margin-bottom: 4px; }
 .future-val   { font-size: 18px; font-weight: 700; font-family: var(--mono); color: var(--accent2); }
-
-/* Tables */
 .q-wrap { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; font-size: 12px; }
 th {
@@ -266,8 +263,6 @@ td.cur { font-weight: 700; color: var(--text); }
 .pct-dn { color: var(--red);   font-weight: 600; }
 .tag-cell { font-family: 'IBM Plex Sans Arabic', sans-serif; font-size: 11px; color: var(--text3); }
 .annual-sub { font-size: 12px; font-weight: 600; color: var(--text3); margin: 12px 0 8px; display: flex; align-items: center; gap: 6px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
-
-/* S5 */
 .verdict-box {
   border-right: 3px solid var(--accent); padding: 14px 16px;
   background: linear-gradient(135deg, rgba(15,23,42,0.7), rgba(15,23,42,0.4));
@@ -295,7 +290,6 @@ td.cur { font-weight: 700; color: var(--text); }
   border: 1px solid var(--border); color: var(--text2); background: rgba(15,23,42,0.5);
 }
 .summary-box { margin-top: 12px; padding: 12px 14px; border-radius: 10px; font-size: 12px; line-height: 1.9; }
-
 @media (max-width: 600px) {
   .chips { display: none; }
   .search-wrap { max-width: 100%; }
@@ -325,7 +319,8 @@ td.cur { font-weight: 700; color: var(--text); }
   <div class="logo">📊 TASI Analyzer Pro</div>
   <div class="search-wrap">
     <input type="text" class="search-input" id="symbolInput" placeholder="🔍 رمز السهم · مثال: 2222" maxlength="6">
-    <button class="btn-search" onclick="startAnalysis()">⚡ تحليل</button>
+    <button class="btn-search" id="btnSearch" onclick="startAnalysis()">⚡ تحليل</button>
+    <button class="btn-stop"   id="btnStop"   onclick="stopAnalysis()">⏹ إيقاف</button>
   </div>
   <div class="chips">
     <span class="chip" onclick="quickSearch('2222')">🛢️ أرامكو</span>
@@ -365,6 +360,20 @@ const MSGS = [
   "🧠 جاري بناء التقرير الذكي..."
 ];
 
+// ════════════════════════════════════════════
+// قراءة الرمز من URL وتشغيل التحليل تلقائياً
+// ════════════════════════════════════════════
+let abortController = null;
+
+window.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const sym    = params.get('symbol');
+  if (sym) {
+    document.getElementById('symbolInput').value = sym.trim();
+    startAnalysis();
+  }
+});
+
 function quickSearch(sym) {
   document.getElementById("symbolInput").value = sym;
   startAnalysis();
@@ -374,26 +383,57 @@ document.getElementById("symbolInput").addEventListener("keydown", e => {
   if (e.key === "Enter") startAnalysis();
 });
 
+function stopAnalysis() {
+  if (abortController) abortController.abort();
+  abortController = null;
+  document.getElementById('btnSearch').style.display = 'block';
+  document.getElementById('btnStop').style.display   = 'none';
+  document.getElementById("loadingState").style.display = "none";
+  document.getElementById("emptyState").style.display   = "flex";
+  document.querySelector(".empty-title").textContent = "تم الإيقاف";
+  document.querySelector(".empty-sub").textContent   = "اضغط تحليل للبدء من جديد";
+}
+
 async function startAnalysis() {
   const sym = document.getElementById("symbolInput").value.trim();
   if (!sym) { document.getElementById("symbolInput").focus(); return; }
+
+  // إيقاف أي طلب سابق
+  if (abortController) abortController.abort();
+  abortController = new AbortController();
+  const signal = abortController.signal;
+
+  document.getElementById('btnSearch').style.display = 'none';
+  document.getElementById('btnStop').style.display   = 'block';
   showLoading();
+
   try {
     setMsg(0);
     const tadawulData = await fetchSectorPE(sym);
+    if (signal.aborted) return;
+
     setMsg(1);
     let url = `${SCRIPT_URL}?symbol=${encodeURIComponent(sym)}`;
     if (tadawulData.sectorPE)   url += `&sector_pe=${tadawulData.sectorPE}`;
     if (tadawulData.sectorName) url += `&sector_name=${encodeURIComponent(tadawulData.sectorName)}`;
+
     setMsg(2);
-    const res  = await fetch(url);
+    const res  = await fetch(url, { signal });
     const data = await res.json();
+    if (signal.aborted) return;
+
     setMsg(3);
     await sleep(300);
     if (data.error) { showError(data.error); return; }
     renderResults(sym, data);
+
   } catch(e) {
+    if (e.name === 'AbortError') return;
     showError("❌ حدث خطأ في الاتصال: " + e.message);
+  } finally {
+    abortController = null;
+    document.getElementById('btnSearch').style.display = 'block';
+    document.getElementById('btnStop').style.display   = 'none';
   }
 }
 
@@ -453,7 +493,6 @@ function renderResults(sym, data) {
   r.style.flexDirection = "column";
 }
 
-/* ── helpers ── */
 function fmt(n) {
   if (n == null) return "—";
   const abs = Math.abs(n);
@@ -490,91 +529,54 @@ function buildReport(d) {
   return [buildS1(d.section1), buildS2(d.section2), buildS3(d.section3), buildS4(d.section4), buildS5(d.section5)].join("");
 }
 
-/* ══ القسم 1 ══ */
 function buildS1(s1) {
   const catCls   = s1.stockCategory === "توزيعات" ? "badge-dividend" : "badge-growth";
   const catEmoji = s1.stockCategory === "توزيعات" ? "💰" : "🚀";
-
-  // هامش الصعود
-  const upside = s1.upsideTarget;
+  const upside   = s1.upsideTarget;
   const upsideHtml = upside != null
     ? `<span class="kv-value ${upside >= 0 ? 'up' : 'dn'}">${upside >= 0 ? '+' : ''}${upside}%</span>`
     : `<span class="kv-value">—</span>`;
-
-  // RSI
   const rsiHtml = s1.rsi != null ? rsiBadge(s1.rsi) : "—";
-
-  // 52 أسبوع
   const hi52 = s1.week52High != null ? `<span style="color:var(--green)">${s1.week52High}</span>` : "—";
   const lo52 = s1.week52Low  != null ? `<span style="color:var(--red)">${s1.week52Low}</span>`   : "—";
-
   return `<div class="card">
     <div class="card-header"><span class="card-emoji">🏢</span><span class="card-title">بطاقة تعريف السهم</span></div>
     <div class="card-body">
       <div class="s1-top">
         <div>
           <div class="s1-name">${s1.companyName}</div>
-          <div class="s1-sub">
-            <span>🏭 ${s1.sector}</span>
-            <span style="color:var(--text3)">·</span>
-            <span>${s1.symbol}</span>
-          </div>
+          <div class="s1-sub"><span>🏭 ${s1.sector}</span><span style="color:var(--text3)">·</span><span>${s1.symbol}</span></div>
         </div>
         <span class="badge ${catCls}">${catEmoji} ${s1.stockCategory}</span>
       </div>
-
       <div class="kv-grid">
         <div class="kv-item"><div class="kv-label">📈 القيمة السوقية</div><div class="kv-value">${fmt(s1.marketCap)} ريال</div></div>
         <div class="kv-item"><div class="kv-label">📚 القيمة الدفترية / سهم</div><div class="kv-value">${s1.bookValuePerShare ?? '—'} ريال</div></div>
         <div class="kv-item"><div class="kv-label">📐 السعر / الدفترية P/B</div><div class="kv-value">${s1.pbRatio ? s1.pbRatio + 'x' : '—'}</div></div>
-
         <div class="kv-item"><div class="kv-label">💰 ربحية السهم EPS</div><div class="kv-value">${s1.eps ? s1.eps + ' ريال' : '—'}</div></div>
         <div class="kv-item"><div class="kv-label">🔢 مكرر الربحية TTM</div><div class="kv-value">${s1.peTTM ? s1.peTTM + 'x' : '—'}</div></div>
         <div class="kv-item"><div class="kv-label">📡 RSI 14</div><div class="kv-value">${rsiHtml}</div></div>
-
         <div class="kv-item"><div class="kv-label">⬆️ أعلى 52 أسبوع</div><div class="kv-value">${hi52} ريال</div></div>
         <div class="kv-item"><div class="kv-label">⬇️ أدنى 52 أسبوع</div><div class="kv-value">${lo52} ريال</div></div>
         <div class="kv-item"><div class="kv-label">🎯 هامش الصعود للمستهدف</div><div>${upsideHtml}</div></div>
-
         <div class="kv-item"><div class="kv-label">🤝 إجماع المحللين</div><div class="kv-value">${consBadge(s1.analystConsensus)}</div></div>
         <div class="kv-item span2"><div class="kv-label">🎯 متوسط السعر المستهدف</div><div class="kv-value">${s1.analystTarget ? s1.analystTarget + ' ريال' : '—'}</div></div>
       </div>
-
-      ${s1.description
-        ? `<div class="desc-label">📝 الوصف العام</div>
-           <div class="desc-box" onclick="this.classList.toggle('expanded')">${s1.description}</div>`
-        : ''}
+      ${s1.description ? `<div class="desc-label">📝 الوصف العام</div><div class="desc-box" onclick="this.classList.toggle('expanded')">${s1.description}</div>` : ''}
     </div>
   </div>`;
 }
 
-/* ══ القسم 2 ══ */
 function buildS2(s2) {
-  const vColor = s2.fairValueVerdict === "مقوم بأقل من قيمته" ? "var(--green)"
-               : s2.fairValueVerdict === "مبالغ في تقييمه"   ? "var(--red)" : "var(--amber)";
-  const vEmoji = s2.fairValueVerdict === "مقوم بأقل من قيمته" ? "🟢"
-               : s2.fairValueVerdict === "مبالغ في تقييمه"   ? "🔴" : "🟡";
-
+  const vColor = s2.fairValueVerdict === "مقوم بأقل من قيمته" ? "var(--green)" : s2.fairValueVerdict === "مبالغ في تقييمه" ? "var(--red)" : "var(--amber)";
+  const vEmoji = s2.fairValueVerdict === "مقوم بأقل من قيمته" ? "🟢" : s2.fairValueVerdict === "مبالغ في تقييمه" ? "🔴" : "🟡";
   const methods  = { dcf:"DCF", ddm:"DDM", sahmk:"⚖️ سهمك", sectorPE:"🏭 مكرر القطاع" };
   const fvCards  = Object.entries(s2.fairValueDetail || {}).map(([k,v]) =>
-    `<div class="fv-card ${v.replaced ? 'replaced' : ''}">
-      <div class="fv-name">${methods[k]||k}${v.replaced ? ' ↻' : ''}</div>
-      <div class="fv-val">${v.value}</div>
-      <div class="fv-weight">${v.weight}%</div>
-    </div>`).join("");
-
+    `<div class="fv-card ${v.replaced ? 'replaced' : ''}"><div class="fv-name">${methods[k]||k}${v.replaced ? ' ↻' : ''}</div><div class="fv-val">${v.value}</div><div class="fv-weight">${v.weight}%</div></div>`).join("");
   const fp = s2.futurePrice;
-  const futureHtml = fp ? `
-    <div class="section-label">🚀 السعر المستقبلي المتوقع (ريال)</div>
-    <div class="future-grid">
-      <div class="future-item"><div class="future-label">⚡ بدون نمو</div><div class="future-val">${fp.base}</div></div>
-      <div class="future-item"><div class="future-label">📈 نمو 10%</div><div class="future-val">${fp.grow10}</div></div>
-      <div class="future-item"><div class="future-label">🚀 نمو 20%</div><div class="future-val">${fp.grow20}</div></div>
-    </div>` : "";
-
+  const futureHtml = fp ? `<div class="section-label">🚀 السعر المستقبلي المتوقع (ريال)</div><div class="future-grid"><div class="future-item"><div class="future-label">⚡ بدون نمو</div><div class="future-val">${fp.base}</div></div><div class="future-item"><div class="future-label">📈 نمو 10%</div><div class="future-val">${fp.grow10}</div></div><div class="future-item"><div class="future-label">🚀 نمو 20%</div><div class="future-val">${fp.grow20}</div></div></div>` : "";
   const dyVal   = s2.dividendYield || 0;
   const dyClass = dyVal > 5 ? "up" : "";
-
   return `<div class="card">
     <div class="card-header"><span class="card-emoji">💹</span><span class="card-title">بيانات السوق والتقييم</span></div>
     <div class="card-body">
@@ -597,46 +599,25 @@ function buildS2(s2) {
   </div>`;
 }
 
-/* ══ القسم 3 ══ */
 function buildS3(s3) {
   if (!s3?.rows?.length) return "";
   const l    = s3.labels || {};
-  const rows = s3.rows.map(r => `<tr>
-    <td class="label-cell">${r.name}</td>
-    <td class="cur">${fmt(r.current)}</td>
-    <td>${fmt(r.previous)}</td>
-    <td>${fmt(r.similar)}</td>
-    <td>${pct(r.qoq)}</td>
-    <td>${pct(r.yoy)}</td>
-  </tr>`).join("");
-
+  const rows = s3.rows.map(r => `<tr><td class="label-cell">${r.name}</td><td class="cur">${fmt(r.current)}</td><td>${fmt(r.previous)}</td><td>${fmt(r.similar)}</td><td>${pct(r.qoq)}</td><td>${pct(r.yoy)}</td></tr>`).join("");
   const sum = s3.summary;
   let summaryHtml = "";
   if (sum) {
-    const aColor  = sum.alert ? "var(--red)"              : "var(--green)";
-    const aBg     = sum.alert ? "rgba(239,68,68,0.08)"    : "rgba(16,185,129,0.08)";
-    const aBorder = sum.alert ? "rgba(239,68,68,0.25)"    : "rgba(16,185,129,0.25)";
+    const aColor  = sum.alert ? "var(--red)" : "var(--green)";
+    const aBg     = sum.alert ? "rgba(239,68,68,0.08)" : "rgba(16,185,129,0.08)";
+    const aBorder = sum.alert ? "rgba(239,68,68,0.25)" : "rgba(16,185,129,0.25)";
     const icon    = sum.alert ? "⚠️" : "✅";
-    summaryHtml = `
-      <div class="summary-box" style="background:${aBg};border:1px solid ${aBorder}">
-        <div style="font-size:12px;font-weight:700;color:${aColor};margin-bottom:6px">${icon} خلاصة التحليل</div>
-        <div style="font-size:12px;color:var(--text2)">${sum.text}</div>
-        <div style="margin-top:8px;font-size:12px;font-weight:600;color:${aColor}">${sum.verdict}</div>
-      </div>`;
+    summaryHtml = `<div class="summary-box" style="background:${aBg};border:1px solid ${aBorder}"><div style="font-size:12px;font-weight:700;color:${aColor};margin-bottom:6px">${icon} خلاصة التحليل</div><div style="font-size:12px;color:var(--text2)">${sum.text}</div><div style="margin-top:8px;font-size:12px;font-weight:600;color:${aColor}">${sum.verdict}</div></div>`;
   }
-
   return `<div class="card">
     <div class="card-header"><span class="card-emoji">📊</span><span class="card-title">التحليل المالي الربع سنوي</span></div>
     <div class="card-body">
       <div class="q-wrap">
         <table>
-          <thead><tr>
-            <th>البند</th>
-            <th>${l.current||''}<br><span style="font-weight:400;color:var(--text3);font-size:10px">الربع الحالي</span></th>
-            <th>${l.previous||''}<br><span style="font-weight:400;color:var(--text3);font-size:10px">الربع السابق</span></th>
-            <th>${l.similar||''}<br><span style="font-weight:400;color:var(--text3);font-size:10px">الربع المماثل</span></th>
-            <th>📈 QoQ</th><th>📅 YoY</th>
-          </tr></thead>
+          <thead><tr><th>البند</th><th>${l.current||''}<br><span style="font-weight:400;color:var(--text3);font-size:10px">الربع الحالي</span></th><th>${l.previous||''}<br><span style="font-weight:400;color:var(--text3);font-size:10px">الربع السابق</span></th><th>${l.similar||''}<br><span style="font-weight:400;color:var(--text3);font-size:10px">الربع المماثل</span></th><th>📈 QoQ</th><th>📅 YoY</th></tr></thead>
           <tbody>${rows}</tbody>
         </table>
       </div>
@@ -645,59 +626,37 @@ function buildS3(s3) {
   </div>`;
 }
 
-/* ══ القسم 4 ══ */
 function buildS4(s4) {
   if (!s4?.profitability?.length) return "";
   const y = s4.years || {};
-
   const profRows = s4.profitability.map(r => {
     const isUp   = r.isPercent ? r.current >= r.previous : null;
     const curCls = r.isPercent ? (isUp ? 'pct-up' : 'pct-dn') : (r.current >= 0 ? '' : 'dn');
     const curVal = r.isPercent ? r.current + '%' : fmt(r.current);
     const preVal = r.isPercent ? r.previous + '%' : fmt(r.previous);
-    return `<tr>
-      <td class="label-cell">${r.name}</td>
-      <td class="${curCls}">${curVal}</td>
-      <td>${preVal}</td>
-      <td class="tag-cell">${r.analysis||'—'}</td>
-    </tr>`;
+    return `<tr><td class="label-cell">${r.name}</td><td class="${curCls}">${curVal}</td><td>${preVal}</td><td class="tag-cell">${r.analysis||'—'}</td></tr>`;
   }).join("");
-
   const levRows = s4.leverage.map(r => {
     const curCls = r.current < 0 ? 'dn' : '';
-    return `<tr>
-      <td class="label-cell">${r.name}</td>
-      <td class="${curCls}">${fmt(r.current)}</td>
-      <td>${fmt(r.previous)}</td>
-      <td class="tag-cell">${r.analysis||'—'}</td>
-    </tr>`;
+    return `<tr><td class="label-cell">${r.name}</td><td class="${curCls}">${fmt(r.current)}</td><td>${fmt(r.previous)}</td><td class="tag-cell">${r.analysis||'—'}</td></tr>`;
   }).join("");
-
   return `<div class="card">
     <div class="card-header"><span class="card-emoji">📋</span><span class="card-title">التحليل السنوي</span></div>
     <div class="card-body">
       <div class="annual-sub">📊 أ · الميزانية والربحية</div>
-      <table>
-        <thead><tr><th>البند</th><th>${y.current}</th><th>${y.previous}</th><th>التحليل</th></tr></thead>
-        <tbody>${profRows}</tbody>
-      </table>
+      <table><thead><tr><th>البند</th><th>${y.current}</th><th>${y.previous}</th><th>التحليل</th></tr></thead><tbody>${profRows}</tbody></table>
       <div class="annual-sub" style="margin-top:14px">💳 ب · المديونية والتدفق النقدي</div>
-      <table>
-        <thead><tr><th>البند</th><th>${y.current}</th><th>${y.previous}</th><th>التحليل</th></tr></thead>
-        <tbody>${levRows}</tbody>
-      </table>
+      <table><thead><tr><th>البند</th><th>${y.current}</th><th>${y.previous}</th><th>التحليل</th></tr></thead><tbody>${levRows}</tbody></table>
     </div>
   </div>`;
 }
 
-/* ══ القسم 5 ══ */
 function buildS5(s5) {
   const sc       = s5.score;
   const scColor  = sc >= 7 ? "var(--green)" : sc >= 4 ? "var(--amber)" : "var(--red)";
   const scBg     = sc >= 7 ? "rgba(16,185,129,0.15)" : sc >= 4 ? "rgba(245,158,11,0.15)" : "rgba(239,68,68,0.15)";
   const decEmoji = sc >= 7 ? "🎯" : sc >= 4 ? "📌" : "⚠️";
   const reasons  = (s5.reasons||[]).map(r => `<span class="reason-tag">${r}</span>`).join("");
-
   return `<div class="card">
     <div class="card-header"><span class="card-emoji">🧠</span><span class="card-title">التقرير الذكي · AI Verdict</span></div>
     <div class="card-body">
