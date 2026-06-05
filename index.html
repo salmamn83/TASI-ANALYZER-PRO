@@ -3,346 +3,265 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TASI Analyzer Pro · محلل الأسهم السعودية</title>
+<title>TASI Analyzer · محلل الأسهم السعودية</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #060a14;
-  --bg2: #0a1020;
-  --bg3: #0f1729;
-  --border: rgba(56,189,248,0.12);
-  --border2: rgba(56,189,248,0.25);
-  --accent: #3b82f6;
+  --bg:      #060a14;
+  --bg2:     #0a1020;
+  --bg3:     #0f1729;
+  --border:  rgba(56,189,248,0.10);
+  --border2: rgba(56,189,248,0.22);
+  --accent:  #3b82f6;
   --accent2: #60a5fa;
-  --green: #10b981;
-  --red: #ef4444;
-  --amber: #f59e0b;
-  --purple: #a855f7;
-  --text: #f1f5f9;
-  --text2: #94a3b8;
-  --text3: #475569;
-  --mono: 'IBM Plex Mono', monospace;
+  --green:   #10b981;
+  --red:     #ef4444;
+  --amber:   #f59e0b;
+  --purple:  #a855f7;
+  --text:    #f1f5f9;
+  --text2:   #94a3b8;
+  --text3:   #475569;
+  --mono:    'IBM Plex Mono', monospace;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: 'IBM Plex Sans Arabic', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  font-size: 14px;
-  line-height: 1.6;
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'IBM Plex Sans Arabic',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.6}
+
+/* شبكة خلفية */
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(56,189,248,0.035) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,0.035) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+.glow-tr{position:fixed;top:-120px;right:-80px;width:480px;height:480px;background:radial-gradient(circle,rgba(59,130,246,0.09) 0%,transparent 65%);pointer-events:none;z-index:0}
+.glow-bl{position:fixed;bottom:-100px;left:-60px;width:360px;height:360px;background:radial-gradient(circle,rgba(16,185,129,0.06) 0%,transparent 65%);pointer-events:none;z-index:0}
+
+/* هيدر */
+.header{position:sticky;top:0;z-index:100;padding:12px 20px;border-bottom:1px solid var(--border);background:rgba(6,10,20,0.93);backdrop-filter:blur(16px);display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.logo{font-size:15px;font-weight:700;background:linear-gradient(135deg,#60a5fa,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.search-row{display:flex;gap:8px;flex:1;min-width:180px;max-width:360px}
+.sym-input{flex:1;background:rgba(15,23,42,0.8);border:1px solid var(--border);border-radius:10px;padding:0 14px;height:38px;color:var(--text);font-family:inherit;font-size:14px;outline:none;transition:all .2s;text-align:right}
+.sym-input::placeholder{color:var(--text3)}
+.sym-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,130,246,0.12)}
+.btn{height:38px;padding:0 18px;border:none;border-radius:10px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn-primary{background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;box-shadow:0 4px 14px rgba(59,130,246,0.28)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(59,130,246,0.38)}
+.btn-stop{background:linear-gradient(135deg,#ef4444,#b91c1c);color:#fff;display:none}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-right:auto}
+.chip{font-size:11px;color:var(--text3);background:rgba(15,23,42,0.7);border:1px solid var(--border);border-radius:20px;padding:4px 12px;cursor:pointer;transition:all .2s}
+.chip:hover{border-color:var(--border2);color:var(--accent2)}
+
+/* محتوى */
+.main{max-width:900px;margin:0 auto;padding:20px 14px;position:relative;z-index:1}
+
+/* الصفحة الفارغة */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;gap:14px;text-align:center}
+.empty-icon{font-size:50px}
+.empty-title{font-size:20px;font-weight:700;background:linear-gradient(135deg,#f1f5f9,#94a3b8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.empty-sub{font-size:13px;color:var(--text3);max-width:280px;line-height:1.7}
+
+/* تحميل */
+.loading{display:none;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;gap:14px}
+.spinner{width:34px;height:34px;border:2px solid rgba(59,130,246,0.15);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-msg{font-size:13px;color:var(--text2)}
+
+/* نتائج */
+.results{display:none;flex-direction:column;gap:10px}
+.results-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
+.sym-pill{font-family:var(--mono);font-size:12px;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.22);border-radius:6px;padding:3px 10px;color:var(--accent2)}
+.print-btn{font-size:11px;color:var(--text3);background:rgba(15,23,42,0.7);border:1px solid var(--border);border-radius:8px;padding:5px 12px;cursor:pointer;font-family:inherit;transition:all .2s}
+.print-btn:hover{border-color:var(--border2);color:var(--accent2)}
+
+/* بطاقة */
+.card{background:rgba(10,16,30,0.85);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:border-color .25s}
+.card:hover{border-color:var(--border2)}
+.card-hdr{padding:10px 16px;background:linear-gradient(90deg,rgba(15,23,42,0.9),rgba(15,23,42,0.4));border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.card-hdr-right{margin-right:auto;display:flex;align-items:center;gap:8px}
+.card-emoji{font-size:15px}
+.card-title{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.08em;text-transform:uppercase}
+.card-body{padding:14px 16px}
+
+/* شبكة kv */
+.kv-grid{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.kv-grid-2{display:grid;grid-template-columns:repeat(2,1fr);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.kv-grid-4{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.kv{padding:10px 14px;border-bottom:1px solid var(--border);border-left:1px solid var(--border)}
+.kv-grid   .kv:nth-child(3n+1){border-left:none}
+.kv-grid   .kv:nth-last-child(-n+3){border-bottom:none}
+.kv-grid-2 .kv:nth-child(odd){border-left:none}
+.kv-grid-2 .kv:nth-last-child(-n+2){border-bottom:none}
+.kv-grid-4 .kv:nth-child(4n+1){border-left:none}
+.kv-grid-4 .kv:nth-last-child(-n+4){border-bottom:none}
+.kv.full{grid-column:1/-1;border-left:none}
+.kv.span2{grid-column:span 2}
+.kv-lbl{font-size:10px;color:var(--text3);margin-bottom:3px}
+.kv-val{font-size:13px;font-weight:600;color:var(--text);font-family:var(--mono)}
+.kv-val.up{color:var(--green)}
+.kv-val.dn{color:var(--red)}
+.kv-val.warn{color:var(--amber)}
+.kv-val.mono{font-family:var(--mono)}
+
+/* بطاقة تعريف */
+.s1-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
+.s1-name{font-size:22px;font-weight:700;background:linear-gradient(135deg,#f1f5f9,#94a3b8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.s1-meta{font-size:12px;color:var(--text3);margin-top:4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.badge{font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;display:inline-flex;align-items:center;gap:4px}
+.badge-growth  {background:rgba(16,185,129,0.12);color:#10b981;border:1px solid rgba(16,185,129,0.3)}
+.badge-div     {background:rgba(245,158,11,0.12);color:#f59e0b;border:1px solid rgba(245,158,11,0.3)}
+.badge-buy     {background:rgba(16,185,129,0.12);color:#10b981;border:1px solid rgba(16,185,129,0.25)}
+.badge-hold    {background:rgba(245,158,11,0.12);color:#f59e0b;border:1px solid rgba(245,158,11,0.25)}
+.badge-sell    {background:rgba(239,68,68,0.12); color:#ef4444;border:1px solid rgba(239,68,68,0.25)}
+.desc-box{margin-top:12px;padding:10px 14px;background:rgba(15,23,42,0.6);border:1px solid var(--border);border-radius:10px;font-size:12px;color:var(--text2);line-height:1.8;max-height:68px;overflow:hidden;cursor:pointer;transition:max-height .35s}
+.desc-box.exp{max-height:400px}
+.desc-lbl{font-size:11px;font-weight:600;color:var(--text3);margin-top:12px;margin-bottom:5px}
+
+/* معلومات السوق */
+.mkt-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:12px}
+.mkt-card{background:linear-gradient(135deg,rgba(15,23,42,0.9),rgba(15,23,42,0.5));border:1px solid var(--border);border-radius:10px;padding:12px;position:relative;overflow:hidden}
+.mkt-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(59,130,246,0.35),transparent)}
+.mkt-emoji{font-size:15px;margin-bottom:4px}
+.mkt-lbl{font-size:10px;color:var(--text3);margin-bottom:3px}
+.mkt-val{font-size:17px;font-weight:700;font-family:var(--mono);color:var(--text)}
+.mkt-val.up{color:var(--green)}
+.mkt-val.dn{color:var(--red)}
+.mkt-val.warn{color:var(--amber)}
+.mkt-sub{font-size:10px;color:var(--text3);margin-top:2px}
+
+/* شريط RSI */
+.rsi-bar-wrap{margin-top:6px;height:4px;background:rgba(71,85,105,0.3);border-radius:2px;overflow:hidden}
+.rsi-bar{height:100%;border-radius:2px;transition:width .5s}
+
+/* MACD */
+.macd-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:4px}
+.macd-tag{font-size:11px;padding:2px 8px;border-radius:8px;font-weight:600}
+.macd-up{background:rgba(16,185,129,0.15);color:var(--green);border:1px solid rgba(16,185,129,0.3)}
+.macd-dn{background:rgba(239,68,68,0.15);color:var(--red);border:1px solid rgba(239,68,68,0.3)}
+
+/* تدفق السيولة */
+.flow-bar{display:flex;height:8px;border-radius:4px;overflow:hidden;margin-top:6px}
+.flow-buy{background:var(--green)}
+.flow-sell{background:var(--red)}
+
+/* جداول */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{padding:8px 10px;text-align:right;font-size:11px;font-weight:600;color:var(--text3);border-bottom:1px solid var(--border);background:rgba(15,23,42,0.7);white-space:nowrap}
+td{padding:9px 10px;text-align:right;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:12px}
+tr:last-child td{border-bottom:none}
+td.lbl{font-family:'IBM Plex Sans Arabic',sans-serif;font-size:13px;color:var(--text2);font-weight:500}
+td.cur{font-weight:700;color:var(--text)}
+.pct-up{color:var(--green);font-weight:600}
+.pct-dn{color:var(--red);font-weight:600}
+.tbl-section{font-size:11px;font-weight:700;color:var(--text3);padding:8px 10px 4px;background:rgba(15,23,42,0.5);border-bottom:1px solid var(--border);letter-spacing:.06em;text-transform:uppercase;grid-column:1/-1}
+
+/* المؤشرات المالية */
+.ind-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px}
+.ind-card{background:rgba(15,23,42,0.7);border:1px solid var(--border);border-radius:10px;padding:12px}
+.ind-lbl{font-size:11px;color:var(--text3);margin-bottom:6px}
+.ind-vals{display:flex;align-items:baseline;gap:10px}
+.ind-cur{font-size:18px;font-weight:700;font-family:var(--mono);color:var(--text)}
+.ind-prev{font-size:12px;color:var(--text3);font-family:var(--mono)}
+.ind-verdict{font-size:11px;margin-top:4px;display:flex;align-items:center;gap:4px}
+
+/* القيمة العادلة */
+.fv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px}
+.fv-card{background:rgba(15,23,42,0.7);border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center}
+.fv-card.replaced{opacity:.4}
+.fv-name{font-size:10px;color:var(--text3);margin-bottom:4px}
+.fv-val{font-size:16px;font-weight:700;font-family:var(--mono);color:var(--text)}
+.fv-weight{font-size:10px;color:var(--text3);margin-top:2px}
+.fv-verdict{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;margin-top:10px}
+.fv-under{background:rgba(16,185,129,0.1);color:var(--green);border:1px solid rgba(16,185,129,0.25)}
+.fv-fair {background:rgba(245,158,11,0.1);color:var(--amber);border:1px solid rgba(245,158,11,0.25)}
+.fv-over {background:rgba(239,68,68,0.1); color:var(--red);  border:1px solid rgba(239,68,68,0.25)}
+
+/* السعر المستقبلي */
+.future-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.fut-card{background:linear-gradient(135deg,rgba(59,130,246,0.08),rgba(59,130,246,0.03));border:1px solid rgba(59,130,246,0.18);border-radius:10px;padding:12px;text-align:center}
+.fut-lbl{font-size:11px;color:var(--text3);margin-bottom:4px}
+.fut-val{font-size:19px;font-weight:700;font-family:var(--mono);color:var(--accent2)}
+
+/* خلاصة ربعية */
+.q-summary{margin-top:12px;padding:12px 14px;border-radius:10px;font-size:12px;line-height:1.9}
+.q-summary-title{font-size:12px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+
+/* التقييم النهائي */
+.score-box{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:12px;margin-bottom:12px}
+.score-circle{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;font-family:var(--mono);flex-shrink:0;border:2px solid}
+.decision-text{font-size:15px;font-weight:700}
+.reasons-wrap{display:flex;flex-wrap:wrap;gap:6px}
+.reason-tag{font-size:11px;padding:4px 12px;border-radius:20px;border:1px solid var(--border);color:var(--text2);background:rgba(15,23,42,0.5)}
+
+/* قسم لابل */
+.sec-lbl{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.07em;text-transform:uppercase;margin:14px 0 8px;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border);padding-bottom:6px}
+
+/* تاريخ التحديث */
+.updated-tag{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px}
+
+@media(max-width:600px){
+  .chips{display:none}
+  .mkt-metrics{grid-template-columns:repeat(2,1fr)}
+  .kv-grid{grid-template-columns:repeat(2,1fr)}
+  .kv-grid .kv:nth-child(3n+1){border-left:1px solid var(--border)}
+  .kv-grid .kv:nth-child(odd){border-left:none}
+  .kv-grid .kv:nth-last-child(-n+3){border-bottom:1px solid var(--border)}
+  .kv-grid .kv:nth-last-child(-n+2){border-bottom:none}
+  .kv-grid-4{grid-template-columns:repeat(2,1fr)}
+  .kv-grid-4 .kv:nth-child(4n+1){border-left:1px solid var(--border)}
+  .kv-grid-4 .kv:nth-child(odd){border-left:none}
+  .kv-grid-4 .kv:nth-last-child(-n+4){border-bottom:1px solid var(--border)}
+  .kv-grid-4 .kv:nth-last-child(-n+2){border-bottom:none}
+  .future-grid{grid-template-columns:repeat(3,1fr)}
+  .ind-grid{grid-template-columns:repeat(2,1fr)}
 }
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(56,189,248,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(56,189,248,0.04) 1px, transparent 1px);
-  background-size: 36px 36px;
-  pointer-events: none;
-  z-index: 0;
-}
-body::after {
-  content: '';
-  position: fixed;
-  top: -150px; right: -100px;
-  width: 500px; height: 500px;
-  background: radial-gradient(circle, rgba(59,130,246,0.1) 0%, transparent 65%);
-  pointer-events: none;
-  z-index: 0;
-}
-.glow-bot {
-  position: fixed;
-  bottom: -100px; left: -80px;
-  width: 350px; height: 350px;
-  background: radial-gradient(circle, rgba(16,185,129,0.07) 0%, transparent 65%);
-  pointer-events: none;
-  z-index: 0;
-}
-.header {
-  position: sticky; top: 0; z-index: 100;
-  padding: 14px 24px;
-  border-bottom: 1px solid var(--border);
-  background: rgba(6,10,20,0.92);
-  backdrop-filter: blur(14px);
-  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
-}
-.logo {
-  font-size: 16px; font-weight: 700;
-  background: linear-gradient(135deg, #60a5fa, #34d399);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-  display: flex; align-items: center; gap: 8px; white-space: nowrap;
-}
-.search-wrap { display: flex; gap: 8px; flex: 1; min-width: 200px; max-width: 380px; }
-.search-input {
-  flex: 1;
-  background: rgba(15,23,42,0.8);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 0 14px; height: 40px;
-  color: var(--text); font-family: inherit; font-size: 14px;
-  outline: none; transition: all 0.2s; text-align: right;
-}
-.search-input::placeholder { color: var(--text3); }
-.search-input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(59,130,246,0.15), 0 0 20px rgba(59,130,246,0.08);
-}
-.btn-search {
-  height: 40px; padding: 0 20px;
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  border: none; border-radius: 10px;
-  color: #fff; font-family: inherit; font-size: 14px; font-weight: 600;
-  cursor: pointer; white-space: nowrap;
-  box-shadow: 0 4px 15px rgba(59,130,246,0.3); transition: all 0.2s;
-}
-.btn-search:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(59,130,246,0.4); }
-.btn-search:active { transform: scale(0.98); }
-.btn-stop {
-  height: 40px; padding: 0 20px;
-  background: linear-gradient(135deg, #ef4444, #b91c1c);
-  border: none; border-radius: 10px;
-  color: #fff; font-family: inherit; font-size: 14px; font-weight: 600;
-  cursor: pointer; white-space: nowrap;
-  box-shadow: 0 4px 15px rgba(239,68,68,0.3); transition: all 0.2s;
-  display: none;
-}
-.btn-stop:hover { opacity: 0.9; }
-.chips { display: flex; gap: 6px; flex-wrap: wrap; margin-right: auto; }
-.chip {
-  font-size: 11px; color: var(--text3);
-  background: rgba(15,23,42,0.7);
-  border: 1px solid var(--border); border-radius: 20px;
-  padding: 4px 12px; cursor: pointer; transition: all 0.2s;
-}
-.chip:hover { border-color: var(--border2); color: var(--accent2); }
-.main { max-width: 880px; margin: 0 auto; padding: 20px 16px; position: relative; z-index: 1; }
-.empty {
-  display: flex; flex-direction: column; align-items: center;
-  justify-content: center; padding: 80px 24px; gap: 16px; text-align: center;
-}
-.empty-icon { font-size: 52px; }
-.empty-title { font-size: 20px; font-weight: 700; background: linear-gradient(135deg,#f1f5f9,#94a3b8); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-.empty-sub { font-size: 14px; color: var(--text3); max-width: 300px; line-height: 1.7; }
-.loading { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 80px 24px; gap: 16px; }
-.spinner {
-  width: 36px; height: 36px;
-  border: 2px solid rgba(59,130,246,0.15); border-top-color: var(--accent);
-  border-radius: 50%; animation: spin 0.8s linear infinite;
-  box-shadow: 0 0 20px rgba(59,130,246,0.2);
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.loading-text { font-size: 14px; color: var(--text2); }
-.results { display: none; flex-direction: column; gap: 10px; }
-.results-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
-.sym-info { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text2); }
-.sym-tag {
-  font-family: var(--mono); font-size: 12px;
-  background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.25);
-  border-radius: 6px; padding: 2px 10px; color: var(--accent2);
-}
-.print-btn {
-  display: flex; align-items: center; gap: 6px;
-  font-size: 12px; color: var(--text3);
-  background: rgba(15,23,42,0.7); border: 1px solid var(--border);
-  border-radius: 8px; padding: 6px 14px; cursor: pointer; font-family: inherit; transition: all 0.2s;
-}
-.print-btn:hover { border-color: var(--border2); color: var(--accent2); }
-.card {
-  background: rgba(10,16,30,0.85); border: 1px solid var(--border);
-  border-radius: 14px; overflow: hidden; transition: all 0.25s;
-}
-.card:hover { border-color: var(--border2); box-shadow: 0 0 30px rgba(59,130,246,0.06); }
-.card-header {
-  padding: 10px 16px;
-  background: linear-gradient(90deg, rgba(15,23,42,0.9), rgba(15,23,42,0.5));
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: 8px;
-}
-.card-emoji { font-size: 15px; }
-.card-title { font-size: 11px; font-weight: 600; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; }
-.card-body { padding: 14px 16px; }
-.s1-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
-.s1-name { font-size: 22px; font-weight: 700; background: linear-gradient(135deg,#f1f5f9,#94a3b8); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-.s1-sub { font-size: 12px; color: var(--text3); margin-top: 3px; display: flex; align-items: center; gap: 6px; }
-.badge { font-size: 11px; font-weight: 600; padding: 4px 12px; border-radius: 20px; display: inline-block; }
-.badge-growth   { background: rgba(16,185,129,0.12); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
-.badge-dividend { background: rgba(245,158,11,0.12); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); }
-.badge-buy  { background: rgba(16,185,129,0.12); color: #10b981; border: 1px solid rgba(16,185,129,0.25); }
-.badge-hold { background: rgba(245,158,11,0.12); color: #f59e0b; border: 1px solid rgba(245,158,11,0.25); }
-.badge-sell { background: rgba(239,68,68,0.12);  color: #ef4444; border: 1px solid rgba(239,68,68,0.25); }
-.kv-grid {
-  display: grid; grid-template-columns: 1fr 1fr 1fr;
-  border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
-}
-.kv-item {
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--border);
-  border-left: 1px solid var(--border);
-}
-.kv-item:nth-child(3n+1) { border-left: none; }
-.kv-item:nth-last-child(-n+3) { border-bottom: none; }
-.kv-item.full { grid-column: span 3; border-left: none; }
-.kv-item.span2 { grid-column: span 2; }
-.kv-label { font-size: 11px; color: var(--text3); margin-bottom: 3px; display: flex; align-items: center; gap: 4px; }
-.kv-value { font-size: 13px; font-weight: 600; color: var(--text); }
-.kv-value.up { color: var(--green); }
-.kv-value.dn { color: var(--red); }
-.kv-value.warn { color: var(--amber); }
-.kv-grid-2 {
-  display: grid; grid-template-columns: 1fr 1fr;
-  border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
-}
-.kv-grid-2 .kv-item { border-left: 1px solid var(--border); }
-.kv-grid-2 .kv-item:nth-child(odd)  { border-left: none; }
-.kv-grid-2 .kv-item:nth-last-child(-n+2) { border-bottom: none; }
-.kv-grid-2 .kv-item.full { grid-column: span 2; border-left: none; }
-.desc-label { font-size: 12px; font-weight: 600; color: var(--text3); margin: 12px 0 6px; display: flex; align-items: center; gap: 6px; }
-.desc-box {
-  padding: 10px 14px;
-  background: rgba(15,23,42,0.6); border: 1px solid var(--border); border-radius: 10px;
-  font-size: 12px; color: var(--text2); line-height: 1.8;
-  max-height: 72px; overflow: hidden; cursor: pointer; transition: max-height 0.3s;
-}
-.desc-box.expanded { max-height: 400px; }
-.rsi-badge {
-  display: inline-block; font-size: 11px; font-weight: 600;
-  padding: 2px 8px; border-radius: 12px; margin-right: 4px;
-}
-.rsi-ob  { background: rgba(239,68,68,0.15);  color: var(--red);   border: 1px solid rgba(239,68,68,0.3); }
-.rsi-os  { background: rgba(16,185,129,0.15); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
-.rsi-neu { background: rgba(71,85,105,0.3);   color: var(--text2); border: 1px solid rgba(71,85,105,0.4); }
-.metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px,1fr)); gap: 8px; margin-bottom: 14px; }
-.metric {
-  background: linear-gradient(135deg, rgba(15,23,42,0.9), rgba(15,23,42,0.6));
-  border-radius: 10px; padding: 12px; border: 1px solid var(--border);
-  position: relative; overflow: hidden;
-}
-.metric::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(59,130,246,0.4), transparent);
-}
-.metric-emoji { font-size: 16px; margin-bottom: 4px; }
-.metric-label { font-size: 10px; color: var(--text3); margin-bottom: 4px; font-weight: 500; }
-.metric-val { font-size: 18px; font-weight: 700; font-family: var(--mono); color: var(--text); }
-.metric-val.up { color: var(--green); }
-.metric-val.dn { color: var(--red); }
-.metric-val.warn { color: var(--amber); }
-.metric-sub { font-size: 10px; color: var(--text3); margin-top: 2px; }
-.section-label { font-size: 12px; font-weight: 600; color: var(--text3); margin: 12px 0 8px; display: flex; align-items: center; gap: 6px; }
-.fv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px,1fr)); gap: 8px; }
-.fv-card { background: rgba(15,23,42,0.7); border-radius: 10px; padding: 10px; text-align: center; border: 1px solid var(--border); }
-.fv-card.replaced { opacity: 0.45; }
-.fv-name   { font-size: 10px; color: var(--text3); margin-bottom: 4px; font-weight: 500; }
-.fv-val    { font-size: 15px; font-weight: 700; font-family: var(--mono); color: var(--text); }
-.fv-weight { font-size: 10px; color: var(--text3); margin-top: 2px; }
-.future-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-top: 8px; }
-.future-item {
-  background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(59,130,246,0.03));
-  border: 1px solid rgba(59,130,246,0.2); border-radius: 10px; padding: 12px; text-align: center;
-}
-.future-label { font-size: 11px; color: var(--text3); margin-bottom: 4px; }
-.future-val   { font-size: 18px; font-weight: 700; font-family: var(--mono); color: var(--accent2); }
-.q-wrap { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-th {
-  padding: 8px 10px; text-align: right;
-  font-size: 11px; font-weight: 600; color: var(--text3);
-  border-bottom: 1px solid var(--border);
-  background: rgba(15,23,42,0.7); white-space: nowrap;
-}
-td { padding: 10px; text-align: right; border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 12px; }
-tr:last-child td { border-bottom: none; }
-td.label-cell { font-family: 'IBM Plex Sans Arabic', sans-serif; font-size: 13px; color: var(--text2); }
-td.cur { font-weight: 700; color: var(--text); }
-.up   { color: var(--green); font-weight: 600; }
-.dn   { color: var(--red);   font-weight: 600; }
-.pct-up { color: var(--green); font-weight: 600; }
-.pct-dn { color: var(--red);   font-weight: 600; }
-.tag-cell { font-family: 'IBM Plex Sans Arabic', sans-serif; font-size: 11px; color: var(--text3); }
-.annual-sub { font-size: 12px; font-weight: 600; color: var(--text3); margin: 12px 0 8px; display: flex; align-items: center; gap: 6px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
-.verdict-box {
-  border-right: 3px solid var(--accent); padding: 14px 16px;
-  background: linear-gradient(135deg, rgba(15,23,42,0.7), rgba(15,23,42,0.4));
-  border-radius: 0 10px 10px 0;
-  font-size: 13px; color: var(--text2); line-height: 2.1; margin-bottom: 12px;
-}
-.verdict-box strong { color: var(--text); }
-.verdict-box .v-row { margin-bottom: 2px; }
-.verdict-decision {
-  padding: 14px 18px;
-  background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(59,130,246,0.05));
-  border: 1px solid rgba(59,130,246,0.25); border-radius: 12px;
-  font-size: 15px; font-weight: 700; color: var(--accent2);
-  display: flex; align-items: center; gap: 12px;
-  box-shadow: 0 0 20px rgba(59,130,246,0.08); margin-bottom: 10px;
-}
-.score-badge {
-  width: 38px; height: 38px; border-radius: 50%;
-  display: inline-flex; align-items: center; justify-content: center;
-  font-size: 15px; font-weight: 700; font-family: var(--mono); flex-shrink: 0;
-}
-.reasons { display: flex; flex-wrap: wrap; gap: 6px; }
-.reason-tag {
-  font-size: 11px; padding: 4px 12px; border-radius: 20px;
-  border: 1px solid var(--border); color: var(--text2); background: rgba(15,23,42,0.5);
-}
-.summary-box { margin-top: 12px; padding: 12px 14px; border-radius: 10px; font-size: 12px; line-height: 1.9; }
-@media (max-width: 600px) {
-  .chips { display: none; }
-  .search-wrap { max-width: 100%; }
-  .metrics-grid { grid-template-columns: repeat(2,1fr); }
-  .future-grid  { grid-template-columns: repeat(3,1fr); }
-  .kv-grid      { grid-template-columns: 1fr 1fr; }
-  .kv-item:nth-child(3n+1) { border-left: 1px solid var(--border); }
-  .kv-item:nth-child(odd)  { border-left: none; }
-  .kv-item:nth-last-child(-n+3) { border-bottom: 1px solid var(--border); }
-  .kv-item:nth-last-child(-n+2) { border-bottom: none; }
-  .kv-item.full  { grid-column: span 2; }
-  .kv-item.span2 { grid-column: span 2; }
-}
-@media print {
-  .header { position: static; background: #fff; }
-  body { background: #fff; color: #000; }
-  body::before, body::after, .glow-bot { display: none; }
-  .print-btn, .chips { display: none !important; }
-  .card { border: 1px solid #ddd; background: #fff; box-shadow: none; }
+@media print{
+  body{background:#fff;color:#000}
+  body::before,.glow-tr,.glow-bl{display:none}
+  .header{position:static;background:#fff}
+  .print-btn,.chips{display:none!important}
+  .card{border:1px solid #ddd;background:#fff}
 }
 </style>
 </head>
 <body>
-<div class="glow-bot"></div>
+<div class="glow-tr"></div>
+<div class="glow-bl"></div>
 
+<!-- هيدر -->
 <div class="header">
-  <div class="logo">📊 TASI Analyzer Pro</div>
-  <div class="search-wrap">
-    <input type="text" class="search-input" id="symbolInput" placeholder="🔍 رمز السهم · مثال: 2222" maxlength="6">
-    <button class="btn-search" id="btnSearch" onclick="startAnalysis()">⚡ تحليل</button>
-    <button class="btn-stop"   id="btnStop"   onclick="stopAnalysis()">⏹ إيقاف</button>
+  <div class="logo">📊 TASI Analyzer</div>
+  <div class="search-row">
+    <input type="text" class="sym-input" id="symInput" placeholder="🔍 رمز السهم · مثال: 2222" maxlength="6">
+    <button class="btn btn-primary" id="btnSearch" onclick="startAnalysis()">⚡ تحليل</button>
+    <button class="btn btn-stop"   id="btnStop"   onclick="stopAnalysis()">⏹ إيقاف</button>
   </div>
   <div class="chips">
     <span class="chip" onclick="quickSearch('2222')">🛢️ أرامكو</span>
     <span class="chip" onclick="quickSearch('1120')">🏦 الراجحي</span>
     <span class="chip" onclick="quickSearch('2010')">⚗️ سابك</span>
     <span class="chip" onclick="quickSearch('1180')">🏛️ الأهلي</span>
+    <span class="chip" onclick="quickSearch('4280')">🏗️ أكوا باور</span>
   </div>
 </div>
 
 <div class="main">
+  <!-- فارغ -->
   <div class="empty" id="emptyState">
     <div class="empty-icon">📈</div>
     <div class="empty-title">محلل الأسهم السعودية</div>
-    <div class="empty-sub">أدخل رمز السهم أعلاه للحصول على تقرير تحليلي ذكي وشامل</div>
+    <div class="empty-sub">أدخل رمز السهم للحصول على تقرير تحليلي شامل</div>
   </div>
+
+  <!-- تحميل -->
   <div class="loading" id="loadingState">
     <div class="spinner"></div>
-    <div class="loading-text" id="loadingMsg">⏳ جاري التحليل...</div>
+    <div class="loading-msg" id="loadingMsg">⏳ جاري التحليل...</div>
   </div>
+
+  <!-- نتائج -->
   <div class="results" id="resultsState">
     <div class="results-bar">
-      <div class="sym-info">📋 تقرير السهم <span class="sym-tag" id="symTag">—</span></div>
+      <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2)">
+        📋 تقرير <span class="sym-pill" id="symPill">—</span>
+        <span class="updated-tag" id="updatedTag"></span>
+      </div>
       <button class="print-btn" onclick="window.print()">🖨️ طباعة</button>
     </div>
     <div id="reportContent"></div>
@@ -350,58 +269,46 @@ td.cur { font-weight: 700; color: var(--text); }
 </div>
 
 <script>
-const SCRIPT_URL  = "https://script.google.com/macros/s/AKfycbzEk6fe3SZNeUw1KMlUkLKLtvegOrASwNsQxlZQEDazosqiq6JaZOZobuGfPBttpKhs/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxfgCb4lOqy4CjheX76ALykOpLzG1mhpB6ryCn3RTAGLIllvzH-KjHjIV2djMwk7rVx/exec";
 const TADAWUL_URL = "https://www.saudiexchange.sa/Resources/Reports-v2/DailyFinancialIndicators_en.html";
 
 const MSGS = [
   "🔍 جاري جلب مكرر القطاع من تداول...",
-  "📡 جاري تحليل البيانات المالية...",
+  "📡 جاري جلب البيانات المالية...",
   "🧮 جاري حساب القيمة العادلة...",
-  "🧠 جاري بناء التقرير الذكي..."
+  "🧠 جاري بناء التقرير..."
 ];
 
-// ════════════════════════════════════════════
-// قراءة الرمز من URL وتشغيل التحليل تلقائياً
-// ════════════════════════════════════════════
-let abortController = null;
+let abortCtrl = null;
 
+// تشغيل تلقائي من URL
 window.addEventListener('DOMContentLoaded', () => {
-  const params = new URLSearchParams(window.location.search);
-  const sym    = params.get('symbol');
-  if (sym) {
-    document.getElementById('symbolInput').value = sym.trim();
-    startAnalysis();
-  }
+  const sym = new URLSearchParams(location.search).get('symbol');
+  if (sym) { document.getElementById('symInput').value = sym; startAnalysis(); }
 });
 
-function quickSearch(sym) {
-  document.getElementById("symbolInput").value = sym;
-  startAnalysis();
-}
+document.getElementById('symInput').addEventListener('keydown', e => { if(e.key==='Enter') startAnalysis(); });
 
-document.getElementById("symbolInput").addEventListener("keydown", e => {
-  if (e.key === "Enter") startAnalysis();
-});
+function quickSearch(sym) { document.getElementById('symInput').value = sym; startAnalysis(); }
 
 function stopAnalysis() {
-  if (abortController) abortController.abort();
-  abortController = null;
+  if (abortCtrl) abortCtrl.abort();
+  abortCtrl = null;
   document.getElementById('btnSearch').style.display = 'block';
   document.getElementById('btnStop').style.display   = 'none';
-  document.getElementById("loadingState").style.display = "none";
-  document.getElementById("emptyState").style.display   = "flex";
-  document.querySelector(".empty-title").textContent = "تم الإيقاف";
-  document.querySelector(".empty-sub").textContent   = "اضغط تحليل للبدء من جديد";
+  document.getElementById('loadingState').style.display = 'none';
+  document.getElementById('emptyState').style.display   = 'flex';
+  document.querySelector('.empty-title').textContent = 'تم الإيقاف';
+  document.querySelector('.empty-sub').textContent   = 'اضغط تحليل للبدء من جديد';
 }
 
 async function startAnalysis() {
-  const sym = document.getElementById("symbolInput").value.trim();
-  if (!sym) { document.getElementById("symbolInput").focus(); return; }
+  const sym = document.getElementById('symInput').value.trim();
+  if (!sym) { document.getElementById('symInput').focus(); return; }
 
-  // إيقاف أي طلب سابق
-  if (abortController) abortController.abort();
-  abortController = new AbortController();
-  const signal = abortController.signal;
+  if (abortCtrl) abortCtrl.abort();
+  abortCtrl = new AbortController();
+  const signal = abortCtrl.signal;
 
   document.getElementById('btnSearch').style.display = 'none';
   document.getElementById('btnStop').style.display   = 'block';
@@ -409,13 +316,13 @@ async function startAnalysis() {
 
   try {
     setMsg(0);
-    const tadawulData = await fetchSectorPE(sym);
+    const tadawul = await fetchSectorPE(sym);
     if (signal.aborted) return;
 
     setMsg(1);
     let url = `${SCRIPT_URL}?symbol=${encodeURIComponent(sym)}`;
-    if (tadawulData.sectorPE)   url += `&sector_pe=${tadawulData.sectorPE}`;
-    if (tadawulData.sectorName) url += `&sector_name=${encodeURIComponent(tadawulData.sectorName)}`;
+    if (tadawul.sectorPE)   url += `&sector_pe=${tadawul.sectorPE}`;
+    if (tadawul.sectorName) url += `&sector_name=${encodeURIComponent(tadawul.sectorName)}`;
 
     setMsg(2);
     const res  = await fetch(url, { signal });
@@ -423,28 +330,17 @@ async function startAnalysis() {
     if (signal.aborted) return;
 
     setMsg(3);
-    await sleep(300);
+    await new Promise(r => setTimeout(r, 200));
 
-    // تشخيص مفصل للخطأ
-    if (!data || typeof data !== 'object') {
-      showError("❌ استجابة غير صالحة من السيرفر");
-      return;
-    }
-    if (data.error) {
-      showError("❌ " + (data.error || "خطأ غير محدد من السيرفر"));
-      return;
-    }
-    if (!data.section1 || !data.section2) {
-      showError("❌ البيانات غير مكتملة — تفاصيل: " + JSON.stringify(data).substring(0, 200));
-      return;
-    }
+    if (!data || data.error) { showError('❌ ' + (data?.error || 'خطأ غير محدد')); return; }
+    if (!data.section1)      { showError('❌ البيانات غير مكتملة'); return; }
+
     renderResults(sym, data);
-
   } catch(e) {
     if (e.name === 'AbortError') return;
-    showError("❌ " + e.message + (e.stack ? "<br><small>" + e.stack.substring(0, 300) + "</small>" : ""));
+    showError('❌ ' + e.message);
   } finally {
-    abortController = null;
+    abortCtrl = null;
     document.getElementById('btnSearch').style.display = 'block';
     document.getElementById('btnStop').style.display   = 'none';
   }
@@ -454,236 +350,465 @@ async function fetchSectorPE(symbol) {
   try {
     const res  = await fetch(TADAWUL_URL);
     const html = await res.text();
-    const doc  = new DOMParser().parseFromString(html, "text/html");
-    const rows = [...doc.querySelectorAll("table tr")];
-    const symbolSectorMap = {};
-    let pendingSymbols = [];
+    const doc  = new DOMParser().parseFromString(html, 'text/html');
+    const rows = [...doc.querySelectorAll('table tr')];
+    const map  = {}; let pending = [];
     for (const row of rows) {
-      const cells = [...row.querySelectorAll("td")];
+      const cells = [...row.querySelectorAll('td')];
       if (!cells.length) continue;
       const c0 = cells[0]?.textContent?.trim();
       if (!c0) continue;
-      if (cells.length === 12 && !isNaN(c0)) {
-        pendingSymbols.push(c0);
-      } else if (cells.length === 11 && isNaN(c0)) {
-        const pe = parseFloat(cells[8]?.textContent?.trim().replace(/,/g,""));
-        pendingSymbols.forEach(s => {
-          symbolSectorMap[s] = {
-            sectorName: c0,
-            sectorPE: (!isNaN(pe) && pe > 0 && pe < 500) ? pe : null
-          };
-        });
-        pendingSymbols = [];
+      if (cells.length === 12 && !isNaN(c0)) { pending.push(c0); }
+      else if (cells.length === 11 && isNaN(c0)) {
+        const pe = parseFloat(cells[8]?.textContent?.trim().replace(/,/g,''));
+        pending.forEach(s => { map[s] = { sectorName:c0, sectorPE:(!isNaN(pe)&&pe>0&&pe<500)?pe:null }; });
+        pending = [];
       }
     }
-    return symbolSectorMap[symbol] || { sectorName: null, sectorPE: null };
-  } catch(e) {
-    console.warn("تعذر جلب بيانات تداول:", e);
-    return { sectorName: null, sectorPE: null };
-  }
+    return map[symbol] || { sectorName:null, sectorPE:null };
+  } catch(e) { return { sectorName:null, sectorPE:null }; }
 }
 
-function setMsg(i) { document.getElementById("loadingMsg").textContent = MSGS[i]; }
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+function setMsg(i) { document.getElementById('loadingMsg').textContent = MSGS[i]; }
 
 function showLoading() {
-  document.getElementById("emptyState").style.display   = "none";
-  document.getElementById("resultsState").style.display = "none";
-  document.getElementById("loadingState").style.display = "flex";
+  document.getElementById('emptyState').style.display   = 'none';
+  document.getElementById('resultsState').style.display = 'none';
+  document.getElementById('loadingState').style.display = 'flex';
 }
+
 function showError(msg) {
-  document.getElementById("loadingState").style.display = "none";
-  document.getElementById("emptyState").style.display   = "flex";
-  document.querySelector(".empty-title").textContent = "حدث خطأ";
-  document.querySelector(".empty-sub").textContent   = msg;
+  document.getElementById('loadingState').style.display = 'none';
+  document.getElementById('emptyState').style.display   = 'flex';
+  document.querySelector('.empty-title').textContent = 'حدث خطأ';
+  document.querySelector('.empty-sub').textContent   = msg;
 }
+
 function renderResults(sym, data) {
-  document.getElementById("loadingState").style.display = "none";
-  document.getElementById("symTag").textContent = sym;
-  document.getElementById("reportContent").innerHTML = buildReport(data);
-  const r = document.getElementById("resultsState");
-  r.style.display       = "flex";
-  r.style.flexDirection = "column";
+  document.getElementById('loadingState').style.display = 'none';
+  document.getElementById('symPill').textContent = sym;
+  const upd = data.section1?.lastUpdated;
+  if (upd) document.getElementById('updatedTag').textContent = '🕐 ' + upd.substring(0,10);
+  document.getElementById('reportContent').innerHTML =
+    buildS1(data.section1) +
+    buildS2(data.section2) +
+    buildS3(data.section3) +
+    buildS4(data.section4);
+  const r = document.getElementById('resultsState');
+  r.style.display = 'flex'; r.style.flexDirection = 'column';
 }
 
-function fmt(n) {
-  if (n == null) return "—";
+// ═══════════════════════════════════
+// دوال مساعدة
+// ═══════════════════════════════════
+function fmt(n, short=true) {
+  if (n==null) return '—';
   const abs = Math.abs(n);
-  if (abs >= 1e12) return (n/1e12).toFixed(2) + " تريليون";
-  if (abs >= 1e9)  return (n/1e9).toFixed(2)  + " مليار";
-  if (abs >= 1e6)  return (n/1e6).toFixed(2)  + " مليون";
-  return Number(n).toLocaleString("en");
+  if (short) {
+    if (abs>=1e12) return (n/1e12).toFixed(2)+' تريليون';
+    if (abs>=1e9)  return (n/1e9).toFixed(2)+' مليار';
+    if (abs>=1e6)  return (n/1e6).toFixed(2)+' مليون';
+  }
+  return Number(n).toLocaleString('en');
 }
+
+function fmtFull(n) { return fmt(n, true); }
+
 function pct(n) {
-  if (n == null) return "<span style='color:var(--text3)'>—</span>";
-  const sign = n >= 0 ? "+" : "";
-  return `<span class="${n >= 0 ? 'pct-up' : 'pct-dn'}">${sign}${n}%</span>`;
+  if (n==null) return "<span style='color:var(--text3)'>—</span>";
+  const sign = n>=0?'+':'';
+  return `<span class="${n>=0?'pct-up':'pct-dn'}">${sign}${n}%</span>`;
 }
-function consensusAr(c) {
-  if (!c) return "—";
-  const m = { buy:"شراء", sell:"بيع", hold:"احتفاظ", "strong buy":"شراء قوي", "strong sell":"بيع قوي", none:"غير محدد" };
-  return m[c.toLowerCase()] || c;
+
+function colorVal(n) {
+  if (n==null) return 'var(--text)';
+  return n>0 ? 'var(--green)' : n<0 ? 'var(--red)' : 'var(--text)';
 }
+
 function consBadge(c) {
-  if (!c) return "—";
-  const l   = c.toLowerCase();
-  const cls = l.includes("buy") ? "badge-buy" : l === "sell" ? "badge-sell" : "badge-hold";
-  const emo = l.includes("buy") ? "✅" : l === "sell" ? "🔴" : "🟡";
-  return `<span class="badge ${cls}">${emo} ${consensusAr(c)}</span>`;
-}
-function rsiBadge(v) {
-  if (v == null) return "—";
-  const cls = v >= 70 ? "rsi-ob" : v <= 30 ? "rsi-os" : "rsi-neu";
-  const lbl = v >= 70 ? "تشبع شرائي" : v <= 30 ? "تشبع بيعي" : "محايد";
-  return `<span class="rsi-badge ${cls}">${v}</span><span style="font-size:11px;color:var(--text3)">${lbl}</span>`;
+  if (!c) return '—';
+  const l = c.toLowerCase();
+  const cls = l.includes('buy')?'badge-buy':l.includes('sell')?'badge-sell':'badge-hold';
+  const ar  = l.includes('strong buy')?'شراء قوي':l.includes('buy')?'شراء':l.includes('sell')?'بيع':'احتفاظ';
+  const ico = l.includes('buy')?'✅':l.includes('sell')?'🔴':'🟡';
+  return `<span class="badge ${cls}">${ico} ${ar}</span>`;
 }
 
-function buildReport(d) {
-  return [buildS1(d.section1), buildS2(d.section2), buildS3(d.section3), buildS4(d.section4), buildS5(d.section5)].join("");
+function rsiColor(v) {
+  if (v==null) return 'var(--text)';
+  if (v>=70) return 'var(--red)';
+  if (v<=30) return 'var(--green)';
+  return 'var(--amber)';
+}
+function rsiText(v) {
+  if (v==null) return '';
+  if (v>=70) return 'تشبع شرائي';
+  if (v<=30) return 'تشبع بيعي';
+  return 'محايد';
 }
 
-function buildS1(s1) {
-  const catCls   = s1.stockCategory === "توزيعات" ? "badge-dividend" : "badge-growth";
-  const catEmoji = s1.stockCategory === "توزيعات" ? "💰" : "🚀";
-  const upside   = s1.upsideTarget;
-  const upsideHtml = upside != null
-    ? `<span class="kv-value ${upside >= 0 ? 'up' : 'dn'}">${upside >= 0 ? '+' : ''}${upside}%</span>`
-    : `<span class="kv-value">—</span>`;
-  const rsiHtml = s1.rsi != null ? rsiBadge(s1.rsi) : "—";
-  const hi52 = s1.week52High != null ? `<span style="color:var(--green)">${s1.week52High}</span>` : "—";
-  const lo52 = s1.week52Low  != null ? `<span style="color:var(--red)">${s1.week52Low}</span>`   : "—";
+// ═══════════════════════════════════
+// القسم 1 — بطاقة التعريف
+// ═══════════════════════════════════
+function buildS1(s) {
+  const catCls = s.stockCategory==='توزيعات'?'badge-div':'badge-growth';
+  const catIco = s.stockCategory==='توزيعات'?'💰':'🚀';
   return `<div class="card">
-    <div class="card-header"><span class="card-emoji">🏢</span><span class="card-title">بطاقة تعريف السهم</span></div>
+    <div class="card-hdr">
+      <span class="card-emoji">🏢</span>
+      <span class="card-title">بطاقة التعريف</span>
+    </div>
     <div class="card-body">
       <div class="s1-top">
         <div>
-          <div class="s1-name">${s1.companyName}</div>
-          <div class="s1-sub"><span>🏭 ${s1.sector}</span><span style="color:var(--text3)">·</span><span>${s1.symbol}</span></div>
+          <div class="s1-name">${s.companyName}</div>
+          <div class="s1-meta">
+            <span>🏭 ${s.sector}</span>
+            <span style="color:var(--text3)">·</span>
+            <span style="font-family:var(--mono)">${s.symbol}</span>
+          </div>
         </div>
-        <span class="badge ${catCls}">${catEmoji} ${s1.stockCategory}</span>
+        <span class="badge ${catCls}">${catIco} ${s.stockCategory}</span>
       </div>
       <div class="kv-grid">
-        <div class="kv-item"><div class="kv-label">📈 القيمة السوقية</div><div class="kv-value">${fmt(s1.marketCap)} ريال</div></div>
-        <div class="kv-item"><div class="kv-label">📚 القيمة الدفترية / سهم</div><div class="kv-value">${s1.bookValuePerShare ?? '—'} ريال</div></div>
-        <div class="kv-item"><div class="kv-label">📐 السعر / الدفترية P/B</div><div class="kv-value">${s1.pbRatio ? s1.pbRatio + 'x' : '—'}</div></div>
-        <div class="kv-item"><div class="kv-label">💰 ربحية السهم EPS</div><div class="kv-value">${s1.eps ? s1.eps + ' ريال' : '—'}</div></div>
-        <div class="kv-item"><div class="kv-label">🔢 مكرر الربحية TTM</div><div class="kv-value">${s1.peTTM ? s1.peTTM + 'x' : '—'}</div></div>
-        <div class="kv-item"><div class="kv-label">📡 RSI 14</div><div class="kv-value">${rsiHtml}</div></div>
-        <div class="kv-item"><div class="kv-label">⬆️ أعلى 52 أسبوع</div><div class="kv-value">${hi52} ريال</div></div>
-        <div class="kv-item"><div class="kv-label">⬇️ أدنى 52 أسبوع</div><div class="kv-value">${lo52} ريال</div></div>
-        <div class="kv-item"><div class="kv-label">🎯 هامش الصعود للمستهدف</div><div>${upsideHtml}</div></div>
-        <div class="kv-item"><div class="kv-label">🤝 إجماع المحللين</div><div class="kv-value">${consBadge(s1.analystConsensus)}</div></div>
-        <div class="kv-item span2"><div class="kv-label">🎯 متوسط السعر المستهدف</div><div class="kv-value">${s1.analystTarget ? s1.analystTarget + ' ريال' : '—'}</div></div>
+        <div class="kv"><div class="kv-lbl">📈 القيمة السوقية</div><div class="kv-val">${fmtFull(s.marketCap)} ر</div></div>
+        <div class="kv"><div class="kv-lbl">📊 عدد الأسهم</div><div class="kv-val">${fmtFull(s.sharesOutstanding)}</div></div>
+        <div class="kv"><div class="kv-lbl">📚 القيمة الدفترية/سهم</div><div class="kv-val">${s.bookValuePerShare??'—'} ر</div></div>
+        <div class="kv"><div class="kv-lbl">📐 السعر/الدفترية P/B</div><div class="kv-val">${s.pbRatio?s.pbRatio+'x':'—'}</div></div>
+        <div class="kv"><div class="kv-lbl">💰 ربحية السهم EPS</div><div class="kv-val">${s.eps??'—'} ر</div></div>
+        <div class="kv"><div class="kv-lbl">🔢 مكرر الربحية TTM</div><div class="kv-val">${s.peTTM?s.peTTM+'x':'—'}</div></div>
       </div>
-      ${s1.description ? `<div class="desc-label">📝 الوصف العام</div><div class="desc-box" onclick="this.classList.toggle('expanded')">${s1.description}</div>` : ''}
+      ${s.description?`<div class="desc-lbl">📝 نبذة عن الشركة</div><div class="desc-box" onclick="this.classList.toggle('exp')">${s.description} <span style="color:var(--accent2);font-size:11px">· اضغط للمزيد</span></div>`:''}
     </div>
   </div>`;
 }
 
-function buildS2(s2) {
-  const vColor = s2.fairValueVerdict === "مقوم بأقل من قيمته" ? "var(--green)" : s2.fairValueVerdict === "مبالغ في تقييمه" ? "var(--red)" : "var(--amber)";
-  const vEmoji = s2.fairValueVerdict === "مقوم بأقل من قيمته" ? "🟢" : s2.fairValueVerdict === "مبالغ في تقييمه" ? "🔴" : "🟡";
-  const methods  = { dcf:"DCF", ddm:"DDM", sahmk:"⚖️ سهمك", sectorPE:"🏭 مكرر القطاع" };
-  const fvCards  = Object.entries(s2.fairValueDetail || {}).map(([k,v]) =>
-    `<div class="fv-card ${v.replaced ? 'replaced' : ''}"><div class="fv-name">${methods[k]||k}${v.replaced ? ' ↻' : ''}</div><div class="fv-val">${v.value}</div><div class="fv-weight">${v.weight}%</div></div>`).join("");
-  const fp = s2.futurePrice;
-  const futureHtml = fp ? `<div class="section-label">🚀 السعر المستقبلي المتوقع (ريال)</div><div class="future-grid"><div class="future-item"><div class="future-label">⚡ بدون نمو</div><div class="future-val">${fp.base}</div></div><div class="future-item"><div class="future-label">📈 نمو 10%</div><div class="future-val">${fp.grow10}</div></div><div class="future-item"><div class="future-label">🚀 نمو 20%</div><div class="future-val">${fp.grow20}</div></div></div>` : "";
-  const dyVal   = s2.dividendYield || 0;
-  const dyClass = dyVal > 5 ? "up" : "";
+// ═══════════════════════════════════
+// القسم 2 — معلومات السوق
+// ═══════════════════════════════════
+function buildS2(s) {
+  const chgCls = s.changePercent>=0?'up':'dn';
+  const chgSign = s.changePercent>=0?'+':'';
+  const rsiVal = s.rsi??null;
+  const rsiPct = rsiVal ? (rsiVal/100)*100 : 50;
+  const rsiClr = rsiColor(rsiVal);
+
+  // تدفق السيولة
+  const total = (s.buyVolume||0)+(s.sellVolume||0);
+  const buyPct  = total>0 ? ((s.buyVolume||0)/total*100).toFixed(0) : 50;
+  const sellPct = total>0 ? ((s.sellVolume||0)/total*100).toFixed(0) : 50;
+
+  const macdCls = s.macd!=null ? (s.macd>s.macdSignal?'macd-up':'macd-dn') : '';
+
   return `<div class="card">
-    <div class="card-header"><span class="card-emoji">💹</span><span class="card-title">بيانات السوق والتقييم</span></div>
+    <div class="card-hdr">
+      <span class="card-emoji">💹</span>
+      <span class="card-title">معلومات السوق</span>
+    </div>
     <div class="card-body">
-      <div class="metrics-grid">
-        <div class="metric"><div class="metric-emoji">💵</div><div class="metric-label">سعر الإغلاق</div><div class="metric-val">${s2.price}</div><div class="metric-sub">ريال</div></div>
-        <div class="metric"><div class="metric-emoji">📊</div><div class="metric-label">مكرر الربحية TTM</div><div class="metric-val">${s2.peTTM ? s2.peTTM+'x' : '—'}</div><div class="metric-sub">${s2.peComparison?.text||'—'}</div></div>
-        <div class="metric"><div class="metric-emoji">🎁</div><div class="metric-label">عائد التوزيعات</div><div class="metric-val ${dyClass}">${dyVal||'—'}${dyVal?'%':''}</div><div class="metric-sub">${s2.payoutVerdict||''}</div></div>
-        <div class="metric"><div class="metric-emoji">⚖️</div><div class="metric-label">القيمة العادلة</div><div class="metric-val">${s2.fairValue||'—'}</div><div class="metric-sub" style="color:${vColor}">${vEmoji} ${s2.fairValueVerdict||''}</div></div>
+      <div class="mkt-metrics">
+        <div class="mkt-card">
+          <div class="mkt-emoji">💵</div>
+          <div class="mkt-lbl">سعر الإغلاق</div>
+          <div class="mkt-val">${s.price}</div>
+          <div class="mkt-sub">ريال</div>
+        </div>
+        <div class="mkt-card">
+          <div class="mkt-emoji">🔓</div>
+          <div class="mkt-lbl">سعر الافتتاح</div>
+          <div class="mkt-val">${s.open??'—'}</div>
+          <div class="mkt-sub">أعلى ${s.high??'—'} · أدنى ${s.low??'—'}</div>
+        </div>
+        <div class="mkt-card">
+          <div class="mkt-emoji">${s.changePercent>=0?'📈':'📉'}</div>
+          <div class="mkt-lbl">نسبة التغير</div>
+          <div class="mkt-val ${chgCls}">${chgSign}${s.changePercent??'—'}%</div>
+          <div class="mkt-sub">${s.priceDirection??''}</div>
+        </div>
+        <div class="mkt-card">
+          <div class="mkt-emoji">📦</div>
+          <div class="mkt-lbl">حجم التداول</div>
+          <div class="mkt-val">${fmtFull(s.volume)}</div>
+          <div class="mkt-sub">${fmtFull(s.value)} ر</div>
+        </div>
       </div>
-      <div class="kv-grid-2" style="margin-bottom:14px">
-        <div class="kv-item"><div class="kv-label">📉 نطاق المحللين</div><div class="kv-value">${s2.analystLow} – ${s2.analystHigh} ريال</div></div>
-        <div class="kv-item"><div class="kv-label">🏭 مكرر القطاع</div><div class="kv-value">${s2.sectorPE ? s2.sectorPE+'x' : '—'}</div></div>
-        <div class="kv-item"><div class="kv-label">📤 نسبة توزيع الأرباح</div><div class="kv-value">${s2.payoutRatio||'—'}${s2.payoutRatio?'%':''}</div></div>
-        <div class="kv-item"><div class="kv-label">🎯 تقييم السعر</div><div class="kv-value" style="color:${vColor}">${vEmoji} ${s2.fairValueVerdict||'—'}</div></div>
+
+      <div class="kv-grid-4" style="margin-bottom:12px">
+        <div class="kv"><div class="kv-lbl">⬆️ أعلى 52 أسبوع</div><div class="kv-val up">${s.week52High??'—'} ر</div></div>
+        <div class="kv"><div class="kv-lbl">⬇️ أدنى 52 أسبوع</div><div class="kv-val dn">${s.week52Low??'—'} ر</div></div>
+        <div class="kv"><div class="kv-lbl">📡 RSI 14</div>
+          <div class="kv-val" style="color:${rsiClr}">${rsiVal??'—'}</div>
+          <div class="rsi-bar-wrap"><div class="rsi-bar" style="width:${rsiPct}%;background:${rsiClr}"></div></div>
+          <div style="font-size:10px;color:${rsiClr};margin-top:3px">${rsiText(rsiVal)}</div>
+        </div>
+        <div class="kv"><div class="kv-lbl">📊 MACD</div>
+          <div class="kv-val" style="color:${s.macd!=null?(s.macd>0?'var(--green)':'var(--red)'):'var(--text)'}">${s.macd??'—'}</div>
+          <div class="macd-row">
+            ${s.macdVerdict?`<span class="macd-tag ${macdCls}">${s.macdVerdict}</span>`:''}
+            <span style="font-size:10px;color:var(--text3)">إشارة: ${s.macdSignal??'—'}</span>
+          </div>
+        </div>
       </div>
-      <div class="section-label">🔬 تفصيل القيمة العادلة</div>
-      <div class="fv-grid">${fvCards}</div>
-      ${futureHtml}
+
+      <div class="sec-lbl">💧 تدفق السيولة</div>
+      <div class="kv-grid">
+        <div class="kv">
+          <div class="kv-lbl">🟢 تدفق شراء</div>
+          <div class="kv-val up">${fmtFull(s.buyVolume)} ر</div>
+          <div style="font-size:10px;color:var(--text3)">${fmtFull(s.buyVolumeQty)} وحدة</div>
+        </div>
+        <div class="kv">
+          <div class="kv-lbl">🔴 تدفق بيع</div>
+          <div class="kv-val dn">${fmtFull(s.sellVolume)} ر</div>
+          <div style="font-size:10px;color:var(--text3)">${fmtFull(s.sellVolumeQty)} وحدة</div>
+        </div>
+        <div class="kv">
+          <div class="kv-lbl">⚖️ الصافي</div>
+          <div class="kv-val" style="color:${colorVal(s.netFlow)}">${fmtFull(s.netFlow)} ر</div>
+          <div style="font-size:10px;color:${colorVal(s.netFlow)}">${s.netFlowVerdict??'—'}</div>
+        </div>
+      </div>
+      <div class="flow-bar" style="margin-top:10px">
+        <div class="flow-buy" style="width:${buyPct}%"></div>
+        <div class="flow-sell" style="width:${sellPct}%"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-top:4px">
+        <span>🟢 شراء ${buyPct}%</span><span>بيع ${sellPct}% 🔴</span>
+      </div>
     </div>
   </div>`;
 }
 
-function buildS3(s3) {
-  if (!s3?.rows?.length) return "";
-  const l    = s3.labels || {};
-  const rows = s3.rows.map(r => `<tr><td class="label-cell">${r.name}</td><td class="cur">${fmt(r.current)}</td><td>${fmt(r.previous)}</td><td>${fmt(r.similar)}</td><td>${pct(r.qoq)}</td><td>${pct(r.yoy)}</td></tr>`).join("");
-  const sum = s3.summary;
-  let summaryHtml = "";
-  if (sum) {
-    const aColor  = sum.alert ? "var(--red)" : "var(--green)";
-    const aBg     = sum.alert ? "rgba(239,68,68,0.08)" : "rgba(16,185,129,0.08)";
-    const aBorder = sum.alert ? "rgba(239,68,68,0.25)" : "rgba(16,185,129,0.25)";
-    const icon    = sum.alert ? "⚠️" : "✅";
-    summaryHtml = `<div class="summary-box" style="background:${aBg};border:1px solid ${aBorder}"><div style="font-size:12px;font-weight:700;color:${aColor};margin-bottom:6px">${icon} خلاصة التحليل</div><div style="font-size:12px;color:var(--text2)">${sum.text}</div><div style="margin-top:8px;font-size:12px;font-weight:600;color:${aColor}">${sum.verdict}</div></div>`;
-  }
-  return `<div class="card">
-    <div class="card-header"><span class="card-emoji">📊</span><span class="card-title">التحليل المالي الربع سنوي</span></div>
-    <div class="card-body">
-      <div class="q-wrap">
+// ═══════════════════════════════════
+// القسم 3 — البيانات المالية
+// ═══════════════════════════════════
+function buildS3(s) {
+  const yrs = s.years || [];
+
+  function buildTable(rows, title, emoji) {
+    const hdrs = yrs.map(y=>`<th>${y}</th>`).join('');
+    const trs  = rows.map(row => {
+      const tds = (row.values||[]).map((v,i) => {
+        const prev = row.values[i+1];
+        let cls = '';
+        if (prev!=null && v!=null) cls = v>prev?'pct-up':v<prev?'pct-dn':'';
+        return `<td class="${i===0?'cur':''} ${cls}">${v!=null?fmtFull(v):'—'}</td>`;
+      }).join('');
+      return `<tr><td class="lbl">${row.name}</td>${tds}</tr>`;
+    }).join('');
+    return `
+      <div class="sec-lbl">${emoji} ${title}</div>
+      <div class="tbl-wrap">
         <table>
-          <thead><tr><th>البند</th><th>${l.current||''}<br><span style="font-weight:400;color:var(--text3);font-size:10px">الربع الحالي</span></th><th>${l.previous||''}<br><span style="font-weight:400;color:var(--text3);font-size:10px">الربع السابق</span></th><th>${l.similar||''}<br><span style="font-weight:400;color:var(--text3);font-size:10px">الربع المماثل</span></th><th>📈 QoQ</th><th>📅 YoY</th></tr></thead>
+          <thead><tr><th>البند</th>${hdrs}</tr></thead>
+          <tbody>${trs}</tbody>
+        </table>
+      </div>`;
+  }
+
+  return `<div class="card">
+    <div class="card-hdr">
+      <span class="card-emoji">📊</span>
+      <span class="card-title">البيانات المالية · آخر 3 سنوات</span>
+    </div>
+    <div class="card-body">
+      ${buildTable(s.financialPosition, 'المركز المالي', 'أ·')}
+      ${buildTable(s.incomeStatement,   'قائمة الدخل',   'ب·')}
+      ${buildTable(s.cashFlows,         'التدفقات النقدية', 'ج·')}
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════
+// القسم 4 — التحليل والتقييم
+// ═══════════════════════════════════
+function buildS4(s) {
+  return buildS4Quarterly(s.quarterly) +
+         buildS4Indicators(s.indicators, s.peTTM, s.sectorPE, s.dividendYield, s.payoutRatio) +
+         buildS4FairValue(s.fairValue, s.analystTarget, s.futurePrice) +
+         buildS4Score(s.finalScore);
+}
+
+function buildS4Quarterly(q) {
+  if (!q?.rows?.length) return '';
+  const l = q.labels || {};
+  const rows = q.rows.map(r => `
+    <tr>
+      <td class="lbl">${r.name}</td>
+      <td class="cur">${fmtFull(r.current)}</td>
+      <td>${fmtFull(r.previous)}</td>
+      <td>${fmtFull(r.similar)}</td>
+      <td>${pct(r.qoq)}</td>
+      <td>${pct(r.yoy)}</td>
+    </tr>`).join('');
+
+  const sum = q.summary;
+  const sumHtml = sum ? (() => {
+    const aClr  = sum.alert ? 'var(--red)' : 'var(--green)';
+    const aBg   = sum.alert ? 'rgba(239,68,68,0.07)' : 'rgba(16,185,129,0.07)';
+    const aBrd  = sum.alert ? 'rgba(239,68,68,0.2)' : 'rgba(16,185,129,0.2)';
+    return `<div class="q-summary" style="background:${aBg};border:1px solid ${aBrd}">
+      <div class="q-summary-title" style="color:${aClr}">${sum.alert?'⚠️':'✅'} خلاصة التحليل</div>
+      <div style="color:var(--text2);font-size:12px">${sum.text}</div>
+      <div style="color:${aClr};font-size:12px;font-weight:600;margin-top:6px">${sum.verdict}</div>
+    </div>`;
+  })() : '';
+
+  return `<div class="card">
+    <div class="card-hdr"><span class="card-emoji">📊</span><span class="card-title">التقييم الربع سنوي</span></div>
+    <div class="card-body">
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>البند</th>
+              <th>${l.current||''}<br><span style="font-weight:400;color:var(--text3);font-size:10px">الربع الحالي</span></th>
+              <th>${l.previous||''}<br><span style="font-weight:400;color:var(--text3);font-size:10px">الربع السابق</span></th>
+              <th>${l.similar||''}<br><span style="font-weight:400;color:var(--text3);font-size:10px">الربع المماثل</span></th>
+              <th>📈 QoQ</th>
+              <th>📅 YoY</th>
+            </tr>
+          </thead>
           <tbody>${rows}</tbody>
         </table>
       </div>
-      ${summaryHtml}
+      ${sumHtml}
     </div>
   </div>`;
 }
 
-function buildS4(s4) {
-  if (!s4?.profitability?.length) return "";
-  const y = s4.years || {};
-  const profRows = s4.profitability.map(r => {
-    const isUp   = r.isPercent ? r.current >= r.previous : null;
-    const curCls = r.isPercent ? (isUp ? 'pct-up' : 'pct-dn') : (r.current >= 0 ? '' : 'dn');
-    const curVal = r.isPercent ? r.current + '%' : fmt(r.current);
-    const preVal = r.isPercent ? r.previous + '%' : fmt(r.previous);
-    return `<tr><td class="label-cell">${r.name}</td><td class="${curCls}">${curVal}</td><td>${preVal}</td><td class="tag-cell">${r.analysis||'—'}</td></tr>`;
-  }).join("");
-  const levRows = s4.leverage.map(r => {
-    const curCls = r.current < 0 ? 'dn' : '';
-    return `<tr><td class="label-cell">${r.name}</td><td class="${curCls}">${fmt(r.current)}</td><td>${fmt(r.previous)}</td><td class="tag-cell">${r.analysis||'—'}</td></tr>`;
-  }).join("");
+function buildS4Indicators(ind, peTTM, sectorPE, divYield, payoutRatio) {
+  if (!ind) return '';
+  const yr = ind.years || {};
+
+  function indCard(lbl, emoji, cur, prev, unit, verdict, verdictClr) {
+    const isUp = cur!=null && prev!=null ? cur>=prev : null;
+    const curClr = isUp===null?'var(--text)':isUp?'var(--green)':'var(--red)';
+    return `<div class="ind-card">
+      <div class="ind-lbl">${emoji} ${lbl}</div>
+      <div class="ind-vals">
+        <div class="ind-cur" style="color:${curClr}">${cur!=null?cur+unit:'—'}</div>
+        <div class="ind-prev">${prev!=null?prev+unit:'—'} <span style="font-size:10px;color:var(--text3)">${yr.previous||''}</span></div>
+      </div>
+      <div class="ind-verdict" style="color:${verdictClr||'var(--text3)'}">${verdict||''}</div>
+    </div>`;
+  }
+
+  const debtClr = ind.debtToEquity?.current < 0.5 ? 'var(--green)' :
+                  ind.debtToEquity?.current <= 1.5 ? 'var(--amber)' : 'var(--red)';
+
   return `<div class="card">
-    <div class="card-header"><span class="card-emoji">📋</span><span class="card-title">التحليل السنوي</span></div>
+    <div class="card-hdr">
+      <span class="card-emoji">📋</span>
+      <span class="card-title">المؤشرات المالية · ${yr.current||''} vs ${yr.previous||''}</span>
+    </div>
     <div class="card-body">
-      <div class="annual-sub">📊 أ · الميزانية والربحية</div>
-      <table><thead><tr><th>البند</th><th>${y.current}</th><th>${y.previous}</th><th>التحليل</th></tr></thead><tbody>${profRows}</tbody></table>
-      <div class="annual-sub" style="margin-top:14px">💳 ب · المديونية والتدفق النقدي</div>
-      <table><thead><tr><th>البند</th><th>${y.current}</th><th>${y.previous}</th><th>التحليل</th></tr></thead><tbody>${levRows}</tbody></table>
+      <div class="ind-grid">
+        ${indCard('هامش الربح الصافي','💰',ind.profitMargin?.current,ind.profitMargin?.previous,'%',
+          (ind.profitMargin?.verdict||'')+(ind.profitMargin?.current?` · ${ind.profitMargin.current}%`:''),
+          ind.profitMargin?.verdict==='تحسن'?'var(--green)':'var(--red)')}
+        ${indCard('العائد على الحقوق ROE','📊',ind.roe?.current,ind.roe?.previous,'%',
+          ind.roe?.verdict, ind.roe?.verdict==='كفاءة عالية'?'var(--green)':'var(--red)')}
+        ${indCard('العائد على الأصول ROA','🏦',ind.roa?.current,ind.roa?.previous,'%',
+          ind.roa?.verdict, ind.roa?.verdict==='تحسن'?'var(--green)':'var(--red)')}
+        ${indCard('نسبة الدين إلى الحقوق','⚖️',ind.debtToEquity?.current,ind.debtToEquity?.previous,'x',
+          ind.debtToEquity?.verdict, debtClr)}
+      </div>
+      <div class="kv-grid-4" style="margin-top:12px">
+        <div class="kv"><div class="kv-lbl">🔢 مكرر الربحية TTM</div><div class="kv-val">${peTTM?peTTM+'x':'—'}</div></div>
+        <div class="kv"><div class="kv-lbl">🏭 مكرر القطاع</div><div class="kv-val">${sectorPE?sectorPE+'x':'—'}</div></div>
+        <div class="kv"><div class="kv-lbl">🎁 عائد التوزيعات</div><div class="kv-val ${divYield>5?'up':''}">${divYield||'—'}${divYield?'%':''}</div></div>
+        <div class="kv"><div class="kv-lbl">📤 نسبة التوزيع</div><div class="kv-val ${payoutRatio>90?'dn':payoutRatio>75?'warn':''}">${payoutRatio||'—'}${payoutRatio?'%':''}</div></div>
+      </div>
     </div>
   </div>`;
 }
 
-function buildS5(s5) {
-  const sc       = s5.score;
-  const scColor  = sc >= 7 ? "var(--green)" : sc >= 4 ? "var(--amber)" : "var(--red)";
-  const scBg     = sc >= 7 ? "rgba(16,185,129,0.15)" : sc >= 4 ? "rgba(245,158,11,0.15)" : "rgba(239,68,68,0.15)";
-  const decEmoji = sc >= 7 ? "🎯" : sc >= 4 ? "📌" : "⚠️";
-  const reasons  = (s5.reasons||[]).map(r => `<span class="reason-tag">${r}</span>`).join("");
+function buildS4FairValue(fv, at, fp) {
+  if (!fv) return '';
+  const methods = { dcf:'DCF', ddm:'DDM', sahmk:'⚖️ سهمك', sectorPE:'🏭 مكرر القطاع' };
+  const fvCards = Object.entries(fv.detail||{}).map(([k,v]) =>
+    `<div class="fv-card ${v.replaced?'replaced':''}">
+      <div class="fv-name">${methods[k]||k}${v.replaced?' ↻':''}</div>
+      <div class="fv-val">${v.value??'—'}</div>
+      <div class="fv-weight">${v.weight}%</div>
+    </div>`).join('');
+
+  const vClsCss = fv.verdict==='مقوم بأقل من قيمته'?'fv-under':fv.verdict==='يتداول بالقيمة العادلة'?'fv-fair':'fv-over';
+  const vIco    = fv.verdict==='مقوم بأقل من قيمته'?'🟢':fv.verdict==='يتداول بالقيمة العادلة'?'🟡':'🔴';
+
+  const futHtml = fp ? `
+    <div class="sec-lbl" style="margin-top:14px">🚀 السعر المستقبلي (ريال)</div>
+    <div class="future-grid">
+      <div class="fut-card"><div class="fut-lbl">⚡ بدون نمو</div><div class="fut-val">${fp.base}</div></div>
+      <div class="fut-card"><div class="fut-lbl">📈 نمو 10%</div><div class="fut-val">${fp.grow10}</div></div>
+      <div class="fut-card"><div class="fut-lbl">🚀 نمو 20%</div><div class="fut-val">${fp.grow20}</div></div>
+    </div>` : '';
+
+  const tgt = at || {};
+  const upsideClr = tgt.upside>=0?'var(--green)':'var(--red)';
+
   return `<div class="card">
-    <div class="card-header"><span class="card-emoji">🧠</span><span class="card-title">التقرير الذكي · AI Verdict</span></div>
+    <div class="card-hdr"><span class="card-emoji">⚖️</span><span class="card-title">التقييم والقيمة العادلة</span></div>
     <div class="card-body">
-      <div class="verdict-box">
-        <div class="v-row">🏷️ <span style="color:var(--text3)">التصنيف: </span>يُصنف السهم كأصل <strong>${s5.category}</strong>.</div>
-        <div class="v-row">⚖️ <span style="color:var(--text3)">التقييم: </span>يتداول السهم <strong>${s5.valuation}</strong> عن القيمة العادلة، مع إجماع للمحللين يميل نحو <strong>${consensusAr(s5.consensus)}</strong>.</div>
-        <div class="v-row">📈 <span style="color:var(--text3)">الأداء: </span>يظهر اتجاه <strong>${s5.revenueDir}</strong> في الإيرادات على المدى السنوي.</div>
-        <div class="v-row">🛡️ <span style="color:var(--text3)">السلامة: </span>المركز المالي <strong>${s5.financial}</strong> وفقاً لنسبة المديونية وجودة التدفقات النقدية.</div>
+
+      <div class="sec-lbl">🔬 القيمة العادلة</div>
+      <div class="fv-grid">${fvCards}</div>
+      <div style="margin-top:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <div style="font-size:22px;font-weight:700;font-family:var(--mono);color:var(--text)">${fv.value??'—'} ر</div>
+        <span class="fv-verdict ${vClsCss}">${vIco} ${fv.verdict}</span>
       </div>
-      <div class="verdict-decision">
-        <span class="score-badge" style="background:${scBg};color:${scColor};border:1px solid ${scColor}40">${sc}</span>
-        ${decEmoji} ${s5.decision}
+
+      <div class="sec-lbl" style="margin-top:14px">🎯 السعر المستهدف</div>
+      <div class="kv-grid">
+        <div class="kv">
+          <div class="kv-lbl">🤝 إجماع المحللين</div>
+          <div>${consBadge(tgt.consensus)}</div>
+        </div>
+        <div class="kv">
+          <div class="kv-lbl">🎯 متوسط المستهدف</div>
+          <div class="kv-val">${tgt.target?tgt.target.toFixed(2)+' ر':'—'}</div>
+        </div>
+        <div class="kv">
+          <div class="kv-lbl">📐 هامش الصعود</div>
+          <div class="kv-val" style="color:${upsideClr}">${tgt.upside!=null?(tgt.upside>=0?'+':'')+tgt.upside+'%':'—'}</div>
+        </div>
+        <div class="kv"><div class="kv-lbl">⬇️ أدنى مستهدف</div><div class="kv-val dn">${tgt.low??'—'} ر</div></div>
+        <div class="kv"><div class="kv-lbl">⬆️ أعلى مستهدف</div><div class="kv-val up">${tgt.high??'—'} ر</div></div>
+        <div class="kv"><div class="kv-lbl">👥 عدد المحللين</div><div class="kv-val">${tgt.numAnalysts??'—'}</div></div>
       </div>
-      <div class="reasons">${reasons}</div>
+
+      ${futHtml}
+    </div>
+  </div>`;
+}
+
+function buildS4Score(sc) {
+  if (!sc) return '';
+  const score  = sc.score;
+  const maxSc  = sc.maxScore || 10;
+  const scClr  = score>=7?'var(--green)':score>=4?'var(--amber)':'var(--red)';
+  const scBg   = score>=7?'rgba(16,185,129,0.12)':score>=4?'rgba(245,158,11,0.12)':'rgba(239,68,68,0.12)';
+  const reasons = (sc.reasons||[]).map(r=>`<span class="reason-tag">${r}</span>`).join('');
+
+  // شريط التقدم
+  const barPct = (score/maxSc*100).toFixed(0);
+
+  return `<div class="card">
+    <div class="card-hdr"><span class="card-emoji">🧠</span><span class="card-title">التقييم النهائي</span></div>
+    <div class="card-body">
+      <div class="score-box" style="background:${scBg};border:1px solid ${scClr}22">
+        <div class="score-circle" style="border-color:${scClr};color:${scClr};background:${scBg}">${score}</div>
+        <div>
+          <div class="decision-text" style="color:${scClr}">${sc.decision}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px">النقاط: ${score} / ${maxSc}</div>
+          <div style="height:4px;background:rgba(71,85,105,0.3);border-radius:2px;margin-top:6px;width:180px;max-width:100%">
+            <div style="height:100%;width:${barPct}%;background:${scClr};border-radius:2px;transition:width .5s"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sec-lbl">📌 أسباب التقييم</div>
+      <div class="reasons-wrap">${reasons}</div>
     </div>
   </div>`;
 }
