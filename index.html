@@ -269,9 +269,8 @@ td.cur{font-weight:700;color:var(--text)}
 </div>
 
 <script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwKLPh1F8_c2DrwFDlDiPYAjCKm1Mejs_o25UqB7V0Vn4p-Z70kK-cLc3ARIJ-VHwpV/exec";
 const TADAWUL_URL = "https://www.saudiexchange.sa/Resources/Reports-v2/DailyFinancialIndicators_en.html";
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx-edgE6062FjL6OTQ_i-5RF0Q0Hkx54fGVgWf5SC8qggXVcqRqo-yWP279ENZya5xX/exec";
-
 
 const MSGS = [
   "🔍 جاري جلب مكرر القطاع من تداول...",
@@ -625,9 +624,9 @@ function buildS3(s) {
 // ═══════════════════════════════════
 function buildS4(s) {
   return buildS4Quarterly(s.quarterly) +
-         buildS4Indicators(s.indicators, s.peTTM, s.sectorPE, s.dividendYield, s.payoutRatio) +
+         buildS4Indicators(s.indicators, s.peTTM, s.sectorPE, s.dividendYield, s.payoutRatio, s.indicatorsSummary) +
          buildS4FairValue(s.fairValue, s.analystTarget, s.futurePrice) +
-         buildS4Score(s.finalScore);
+         buildS4Score(s.finalScore, s.finalSummary);
 }
 
 function buildS4Quarterly(q) {
@@ -678,7 +677,7 @@ function buildS4Quarterly(q) {
   </div>`;
 }
 
-function buildS4Indicators(ind, peTTM, sectorPE, divYield, payoutRatio) {
+function buildS4Indicators(ind, peTTM, sectorPE, divYield, payoutRatio, indSummary) {
   if (!ind) return '';
   const yr = ind.years || {};
 
@@ -721,6 +720,11 @@ function buildS4Indicators(ind, peTTM, sectorPE, divYield, payoutRatio) {
         <div class="kv"><div class="kv-lbl">🎁 عائد التوزيعات</div><div class="kv-val ${divYield>5?'up':''}">${divYield||'—'}${divYield?'%':''}</div></div>
         <div class="kv"><div class="kv-lbl">📤 نسبة التوزيع</div><div class="kv-val ${payoutRatio>90?'dn':payoutRatio>75?'warn':''}">${payoutRatio||'—'}${payoutRatio?'%':''}</div></div>
       </div>
+    </div>
+      ${indSummary ? `<div style="margin-top:12px;padding:12px 14px;background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.18);border-radius:10px">
+        <div style="font-size:11px;font-weight:700;color:var(--accent2);margin-bottom:6px">🤖 تحليل ذكي للمؤشرات</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.9">${indSummary}</div>
+      </div>` : ''}
     </div>
   </div>`;
 }
@@ -784,7 +788,7 @@ function buildS4FairValue(fv, at, fp) {
   </div>`;
 }
 
-function buildS4Score(sc) {
+function buildS4Score(sc, finalSummary) {
   if (!sc) return '';
   const score  = sc.score;
   const maxSc  = sc.maxScore || 10;
@@ -810,6 +814,13 @@ function buildS4Score(sc) {
       </div>
       <div class="sec-lbl">📌 أسباب التقييم</div>
       <div class="reasons-wrap">${reasons}</div>
+      ${finalSummary ? `
+      <div style="margin-top:14px;padding:14px 16px;background:linear-gradient(135deg,rgba(59,130,246,0.08),rgba(59,130,246,0.04));border:1px solid rgba(59,130,246,0.2);border-radius:12px">
+        <div style="font-size:11px;font-weight:700;color:var(--accent2);margin-bottom:8px;display:flex;align-items:center;gap:6px">
+          🧠 التقييم الاستثماري الشامل
+        </div>
+        <div style="font-size:13px;color:var(--text2);line-height:2;border-right:3px solid var(--accent);padding-right:12px">${finalSummary}</div>
+      </div>` : ''}
     </div>
   </div>`;
 }
