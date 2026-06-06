@@ -284,7 +284,7 @@ td .edit-input{width:120px}
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxooz7NddQAB53geITTvmRPhmWjoZ8qsYqtJGFXPUpuYmNZ5DU7os2REVQGRd2Q92EP/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxRpwJYieUCHvdzQjmy0GvCgRNCUAyHAIa1I0xNHRCDhuQOlZoPAJKLDuvMT0S3Hyc/exec";
 const TADAWUL_URL = "https://www.saudiexchange.sa/Resources/Reports-v2/DailyFinancialIndicators_en.html";
 
 const MSGS = [
@@ -433,7 +433,10 @@ function fmt(n, short=true) {
   return Number(n).toLocaleString('en');
 }
 
-function fmtFull(n) { return fmt(n, true); }
+function fmtFull(n) { 
+  if (n === "N/A") return '<span style="color:var(--text3);font-size:11px">غير متوفر</span>';
+  return fmt(n, true); 
+}
 
 function pct(n) {
   if (n==null) return "<span style='color:var(--text3)'>—</span>";
