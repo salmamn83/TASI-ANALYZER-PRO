@@ -146,7 +146,7 @@ th{padding:8px 10px;text-align:right;font-size:11px;font-weight:600;color:var(--
 td{padding:9px 10px;text-align:right;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:12px}
 tr:last-child td{border-bottom:none}
 td.lbl{font-family:'IBM Plex Sans Arabic',sans-serif;font-size:13px;color:var(--text2);font-weight:500}
-td.cur{font-weight:700;color:var(--text)}
+td.cur{font-weight:700;color:var(--text)} td.cur.pct-up{color:var(--green)} td.cur.pct-dn{color:var(--red)}
 .pct-up{color:var(--green);font-weight:600}
 .pct-dn{color:var(--red);font-weight:600}
 .tbl-section{font-size:11px;font-weight:700;color:var(--text3);padding:8px 10px 4px;background:rgba(15,23,42,0.5);border-bottom:1px solid var(--border);letter-spacing:.06em;text-transform:uppercase;grid-column:1/-1}
@@ -626,7 +626,8 @@ function buildS3(s) {
         }
         const key = tableName ? `${tableName}|${row.name}|${i}` : '';
         const dataAttrs = tableName ? `data-section="annual" data-field="${row.field}" data-key="${key}" data-value="${v||0}"` : '';
-        return `<td class="${i===0?'cur':''} ${cls}" ${dataAttrs}>${v!=null?fmtFull(v):'—'}</td>`;
+        const tdClass = [i===0?'cur':'', cls].filter(Boolean).join(' ');
+        return `<td class="${tdClass}" ${dataAttrs}>${v!=null?fmtFull(v):'—'}</td>`;
       }).join('');
       return `<tr><td class="lbl">${row.name}</td>${tds}</tr>`;
     }).join('');
