@@ -284,7 +284,7 @@ td .edit-input{width:120px}
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxXADeg9jTIaKol23axOL7AXx9suGENF5GdPJfvs5HOyVw9dxrxfRfUm_JCXXbpCQFk/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxu9kMMU1q4iG1vyvBf4TkB24w6jQnBmqdJhlS3_ut3jJg5PkMsx-16ENPg8qDcvyBA/exec";
 const TADAWUL_URL = "https://www.saudiexchange.sa/Resources/Reports-v2/DailyFinancialIndicators_en.html";
 
 const MSGS = [
@@ -762,6 +762,13 @@ function buildS4Indicators(ind, peTTM, sectorPE, divYield, payoutRatio, indSumma
           ind.roa?.verdict, ind.roa?.verdict==='تحسن'?'var(--green)':'var(--red)')}
         ${indCard('نسبة الدين إلى الحقوق','⚖️',ind.debtToEquity?.current,ind.debtToEquity?.previous,'x',
           ind.debtToEquity?.verdict, debtClr)}
+        ${indCard('جودة الأرباح','🔍',ind.earningsQuality?.current,ind.earningsQuality?.previous,'x',
+          ind.earningsQuality?.verdict,
+          ind.earningsQuality?.current==null?'var(--text3)':
+          ind.earningsQuality?.current<0?'var(--red)':
+          ind.earningsQuality?.current<0.5?'var(--red)':
+          ind.earningsQuality?.current<0.7?'var(--amber)':
+          ind.earningsQuality?.current<1.0?'var(--green)':'var(--green)')}
       </div>
       <div class="kv-grid-4" style="margin-top:12px">
         <div class="kv"><div class="kv-lbl">🔢 مكرر الربحية TTM</div><div class="kv-val">${peTTM?peTTM+'x':'—'}</div></div>
