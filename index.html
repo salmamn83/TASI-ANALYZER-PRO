@@ -297,7 +297,7 @@ td .edit-input{width:120px}
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzWmIvRxEqAMuRP6vetnLCwKe6IuEAj4c2y-RqesBzid3OajZABvbpd6aABxVcyWsyU/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby6ICy4AGoadrSzt-TER0zgALpab1dbpxuZRsPqmLVEl7dTUoXthXKd7axXU9HrqzRu/exec";
 const TADAWUL_URL = "https://www.saudiexchange.sa/Resources/Reports-v2/DailyFinancialIndicators_en.html";
 
 const MSGS = [
@@ -682,7 +682,7 @@ function buildS4(s) {
   return buildS4Quarterly(s.quarterly) +
          buildS4Indicators(s.indicators, s.peTTM, s.sectorPE, s.dividendYield, s.payoutRatio, s.indicatorsSummary) +
          buildS4FairValue(s.fairValue, s.analystTarget, s.futurePrice) +
-         buildS4Score(s.finalScore, s.finalSummary, s.extras);
+         buildS4Score(s.finalScore, s.finalSummary, s.extras, s.extrasAnalysis);
 }
 
 function buildS4Quarterly(q) {
@@ -883,41 +883,47 @@ function buildS4FairValue(fv, at, fp) {
   </div>`;
 }
 
-function buildS4Score(sc, finalSummary, extras) {
+function buildS4Score(sc, finalSummary, extras, extrasAnalysis) {
   if (!sc) return '';
   const score  = sc.score;
   const maxSc  = sc.maxScore || 10;
   const scClr  = score>=7?'var(--green)':score>=4?'var(--amber)':'var(--red)';
   const scBg   = score>=7?'rgba(16,185,129,0.12)':score>=4?'rgba(245,158,11,0.12)':'rgba(239,68,68,0.12)';
-  const reasons = (sc.reasons||[]).map(r=>`<span class="reason-tag">${r}</span>`).join('');
-
-  // شريط التقدم
+  const reasons = (sc.reasons||[]).filter(r => !r.includes('الإضافات')).map(r=>`<span class="reason-tag">${r}</span>`).join('');
   const barPct = (score/maxSc*100).toFixed(0);
+
+
 
   return `<div class="card">
     <div class="card-hdr"><span class="card-emoji">🧠</span><span class="card-title">التقييم النهائي</span></div>
     <div class="card-body">
+
+      <!-- النقاط والقرار -->
       <div class="score-box" style="background:${scBg};border:1px solid ${scClr}22">
         <div class="score-circle" style="border-color:${scClr};color:${scClr};background:${scBg}">${score}</div>
         <div>
           <div class="decision-text" style="color:${scClr}">${sc.decision}</div>
           <div style="font-size:11px;color:var(--text3);margin-top:2px">النقاط: ${score} / ${maxSc}</div>
+          ${extrasAnalysis?.scoreImpact ? `<div style="font-size:11px;margin-top:3px;color:${extrasAnalysis.scoreImpact>0?'var(--green)':'var(--red)'}">
+            ${extrasAnalysis.scoreImpact>0?'▲':'▼'} ${extrasAnalysis.scoreImpact>0?'+':''}${extrasAnalysis.scoreImpact} نقطة من الإضافات
+          </div>` : ''}
           <div style="height:4px;background:rgba(71,85,105,0.3);border-radius:2px;margin-top:6px;width:180px;max-width:100%">
             <div style="height:100%;width:${barPct}%;background:${scClr};border-radius:2px;transition:width .5s"></div>
           </div>
         </div>
       </div>
-      ${extras ? `<div class="sec-lbl">📝 الإضافات المدخلة</div>
-      <div style="padding:10px 14px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-radius:10px;font-size:12px;color:var(--text2);line-height:1.8;margin-bottom:10px">${extras}</div>` : ''}
+
+      <!-- أسباب التقييم -->
       <div class="sec-lbl">📌 أسباب التقييم</div>
       <div class="reasons-wrap">${reasons}</div>
+
+      <!-- الخلاصة الاستثمارية الشاملة -->
       ${finalSummary ? `
       <div style="margin-top:14px;padding:14px 16px;background:linear-gradient(135deg,rgba(59,130,246,0.08),rgba(59,130,246,0.04));border:1px solid rgba(59,130,246,0.2);border-radius:12px">
-        <div style="font-size:11px;font-weight:700;color:var(--accent2);margin-bottom:8px;display:flex;align-items:center;gap:6px">
-          🧠 التقييم الاستثماري الشامل
-        </div>
+        <div style="font-size:11px;font-weight:700;color:var(--accent2);margin-bottom:8px">🧠 التقييم الاستثماري الشامل</div>
         <div style="font-size:13px;color:var(--text2);line-height:2;border-right:3px solid var(--accent);padding-right:12px">${finalSummary}</div>
       </div>` : ''}
+
     </div>
   </div>`;
 }
