@@ -45,6 +45,9 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .btn-stop{background:linear-gradient(135deg,#ef4444,#b91c1c);color:#fff;display:none}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin-right:auto}
 .chip{font-size:11px;color:var(--text3);background:rgba(15,23,42,0.7);border:1px solid var(--border);border-radius:20px;padding:4px 12px;cursor:pointer;transition:all .2s}
+.extras-input{background:rgba(15,23,42,0.8);border:1px solid var(--border);border-radius:10px;padding:6px 14px;height:38px;color:var(--text);font-family:inherit;font-size:13px;outline:none;transition:all .2s;text-align:right;min-width:200px;max-width:320px;flex:1}
+.extras-input::placeholder{color:var(--text3)}
+.extras-input:focus{border-color:rgba(245,158,11,0.5);box-shadow:0 0 0 3px rgba(245,158,11,0.08)}
 .chip:hover{border-color:var(--border2);color:var(--accent2)}
 
 /* محتوى */
@@ -247,6 +250,9 @@ td .edit-input{width:120px}
     <button class="btn btn-primary" id="btnSearch" onclick="startAnalysis()">⚡ تحليل</button>
     <button class="btn btn-stop"   id="btnStop"   onclick="stopAnalysis()">⏹ إيقاف</button>
   </div>
+  <div class="search-row" style="max-width:420px">
+    <input type="text" class="extras-input" id="extrasInput" placeholder="📝 إضافات · أخبار، قروض، ملاحظات...">
+  </div>
   <div class="chips">
     <span class="chip" onclick="quickSearch('2222')">🛢️ أرامكو</span>
     <span class="chip" onclick="quickSearch('1120')">🏦 الراجحي</span>
@@ -284,7 +290,7 @@ td .edit-input{width:120px}
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxu9kMMU1q4iG1vyvBf4TkB24w6jQnBmqdJhlS3_ut3jJg5PkMsx-16ENPg8qDcvyBA/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzWmIvRxEqAMuRP6vetnLCwKe6IuEAj4c2y-RqesBzid3OajZABvbpd6aABxVcyWsyU/exec";
 const TADAWUL_URL = "https://www.saudiexchange.sa/Resources/Reports-v2/DailyFinancialIndicators_en.html";
 
 const MSGS = [
@@ -338,9 +344,11 @@ async function startAnalysis() {
     if (signal.aborted) return;
 
     setMsg(1);
+    const extras = document.getElementById('extrasInput').value.trim();
     let url = `${SCRIPT_URL}?symbol=${encodeURIComponent(sym)}`;
     if (tadawul.sectorPE)   url += `&sector_pe=${tadawul.sectorPE}`;
     if (tadawul.sectorName) url += `&sector_name=${encodeURIComponent(tadawul.sectorName)}`;
+    if (extras)             url += `&extras=${encodeURIComponent(extras)}`;
 
     setMsg(2);
     const res  = await fetch(url, { signal });
@@ -667,7 +675,7 @@ function buildS4(s) {
   return buildS4Quarterly(s.quarterly) +
          buildS4Indicators(s.indicators, s.peTTM, s.sectorPE, s.dividendYield, s.payoutRatio, s.indicatorsSummary) +
          buildS4FairValue(s.fairValue, s.analystTarget, s.futurePrice) +
-         buildS4Score(s.finalScore, s.finalSummary);
+         buildS4Score(s.finalScore, s.finalSummary, s.extras);
 }
 
 function buildS4Quarterly(q) {
@@ -868,7 +876,7 @@ function buildS4FairValue(fv, at, fp) {
   </div>`;
 }
 
-function buildS4Score(sc, finalSummary) {
+function buildS4Score(sc, finalSummary, extras) {
   if (!sc) return '';
   const score  = sc.score;
   const maxSc  = sc.maxScore || 10;
@@ -892,6 +900,8 @@ function buildS4Score(sc, finalSummary) {
           </div>
         </div>
       </div>
+      ${extras ? `<div class="sec-lbl">📝 الإضافات المدخلة</div>
+      <div style="padding:10px 14px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-radius:10px;font-size:12px;color:var(--text2);line-height:1.8;margin-bottom:10px">${extras}</div>` : ''}
       <div class="sec-lbl">📌 أسباب التقييم</div>
       <div class="reasons-wrap">${reasons}</div>
       ${finalSummary ? `
