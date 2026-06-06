@@ -284,7 +284,7 @@ td .edit-input{width:120px}
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxeKM_8iZiXwQ8RDuHzTiGi2n42kFAWUX-J0KssCp_aIlcTaUTfqwVQ4Yr9p9lbqIa7/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyMupHc9WfGqqAJZt3Hqx5n0ebvtuiVejae6_xAWO1OCALicNKQcZ3EL6e228svbqPQ/exec";
 const TADAWUL_URL = "https://www.saudiexchange.sa/Resources/Reports-v2/DailyFinancialIndicators_en.html";
 
 const MSGS = [
@@ -982,9 +982,11 @@ async function recalcAll(section) {
   }
 
   try {
-    // إرسال البيانات المعدّلة للـ Script عبر GET
-    const encoded = encodeURIComponent(JSON.stringify(editedData));
-    const res = await fetch(SCRIPT_URL + '?mode=recalc&data=' + encoded);
+    // استخراج التغييرات فقط مقارنةً بالبيانات الأصلية
+    const changes = extractChanges(originalData, editedData);
+    const symbol  = editedData.section1.symbol;
+    const encoded = encodeURIComponent(JSON.stringify(changes));
+    const res = await fetch(SCRIPT_URL + '?mode=recalc&symbol=' + symbol + '&changes=' + encoded);
     const newData = await res.json();
 
     if (newData.error) {
@@ -1157,6 +1159,46 @@ function recalcQuarterly() {
     if (row.similar != null && row.similar !== 0)
       row.yoy = round1(((row.current - row.similar) / Math.abs(row.similar)) * 100);
   });
+}
+
+function extractChanges(original, edited) {
+  const changes = { s3: {}, s4: {}, sectorPE: null, dcfGrowth: null };
+
+  // تغييرات البيانات المالية السنوية
+  const tables = ['financialPosition','incomeStatement','cashFlows'];
+  tables.forEach(t => {
+    const origRows = original.section3[t] || [];
+    const editRows = edited.section3[t]   || [];
+    editRows.forEach((row, ri) => {
+      row.values.forEach((v, vi) => {
+        const origVal = origRows[ri]?.values[vi];
+        if (v !== origVal && v != null) {
+          if (!changes.s3[t]) changes.s3[t] = {};
+          if (!changes.s3[t][row.name]) changes.s3[t][row.name] = {};
+          changes.s3[t][row.name][vi] = v;
+        }
+      });
+    });
+  });
+
+  // تغييرات التقييم الربع سنوي
+  const origRows = original.section4?.quarterly?.rows || [];
+  const editRows = edited.section4?.quarterly?.rows   || [];
+  editRows.forEach((row, ri) => {
+    ['current','previous','similar'].forEach(col => {
+      const origVal = origRows[ri]?.[col];
+      if (row[col] !== origVal && typeof row[col] === 'number') {
+        if (!changes.s4[row.name]) changes.s4[row.name] = {};
+        changes.s4[row.name][col] = row[col];
+      }
+    });
+  });
+
+  // مكرر القطاع ومعدل DCF
+  changes.sectorPE  = edited.section4.sectorPE  || null;
+  changes.dcfGrowth = edited._dcfGrowth         || null;
+
+  return changes;
 }
 
 function round2(n) { return Math.round(n * 100) / 100; }
