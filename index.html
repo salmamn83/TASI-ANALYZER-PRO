@@ -284,7 +284,7 @@ td .edit-input{width:120px}
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzxC6mFmyQkU33wRpfl-GBB1QdfbOkin8IYqdh-FE2vjJrUI9P6RkkypQFHOhI4OQqq/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxeKM_8iZiXwQ8RDuHzTiGi2n42kFAWUX-J0KssCp_aIlcTaUTfqwVQ4Yr9p9lbqIa7/exec";
 const TADAWUL_URL = "https://www.saudiexchange.sa/Resources/Reports-v2/DailyFinancialIndicators_en.html";
 
 const MSGS = [
@@ -982,12 +982,9 @@ async function recalcAll(section) {
   }
 
   try {
-    // إرسال البيانات المعدّلة للـ Script
-    const res = await fetch(SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ editedData })
-    });
+    // إرسال البيانات المعدّلة للـ Script عبر GET
+    const encoded = encodeURIComponent(JSON.stringify(editedData));
+    const res = await fetch(SCRIPT_URL + '?mode=recalc&data=' + encoded);
     const newData = await res.json();
 
     if (newData.error) {
