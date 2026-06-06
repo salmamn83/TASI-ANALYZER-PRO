@@ -45,9 +45,14 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .btn-stop{background:linear-gradient(135deg,#ef4444,#b91c1c);color:#fff;display:none}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin-right:auto}
 .chip{font-size:11px;color:var(--text3);background:rgba(15,23,42,0.7);border:1px solid var(--border);border-radius:20px;padding:4px 12px;cursor:pointer;transition:all .2s}
-.extras-input{background:rgba(15,23,42,0.8);border:1px solid var(--border);border-radius:10px;padding:6px 14px;height:38px;color:var(--text);font-family:inherit;font-size:13px;outline:none;transition:all .2s;text-align:right;min-width:200px;max-width:320px;flex:1}
+.extras-input{background:rgba(15,23,42,0.8);border:1px solid var(--border);border-radius:10px;padding:0 14px;height:38px;color:var(--text);font-family:inherit;font-size:13px;outline:none;transition:all .2s;text-align:right;flex:2;min-width:0}
 .extras-input::placeholder{color:var(--text3)}
-.extras-input:focus{border-color:rgba(245,158,11,0.5);box-shadow:0 0 0 3px rgba(245,158,11,0.08)}
+.extras-input:focus{border-color:rgba(245,158,11,0.4);box-shadow:0 0 0 3px rgba(245,158,11,0.08)}
+.header-controls{display:flex;flex-direction:column;gap:8px;flex:1;min-width:0}
+.header-row1{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.header-row1 .sym-input{flex:0 0 120px;min-width:0}
+.screener-btn{display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 16px;background:rgba(168,85,247,0.12);border:1px solid rgba(168,85,247,0.3);border-radius:10px;color:#a855f7;font-size:13px;font-weight:600;text-decoration:none;white-space:nowrap;transition:all .2s;font-family:inherit}
+.screener-btn:hover{background:rgba(168,85,247,0.2);border-color:rgba(168,85,247,0.5)}
 .chip:hover{border-color:var(--border2);color:var(--accent2)}
 
 /* محتوى */
@@ -245,20 +250,22 @@ td .edit-input{width:120px}
 <!-- هيدر -->
 <div class="header">
   <div class="logo">📊 TASI Analyzer</div>
-  <div class="search-row">
-    <input type="text" class="sym-input" id="symInput" placeholder="🔍 رمز السهم · مثال: 2222" maxlength="6">
-    <button class="btn btn-primary" id="btnSearch" onclick="startAnalysis()">⚡ تحليل</button>
-    <button class="btn btn-stop"   id="btnStop"   onclick="stopAnalysis()">⏹ إيقاف</button>
-  </div>
-  <div class="search-row" style="max-width:420px">
-    <input type="text" class="extras-input" id="extrasInput" placeholder="📝 إضافات · أخبار، قروض، ملاحظات...">
-  </div>
-  <div class="chips">
-    <span class="chip" onclick="quickSearch('2222')">🛢️ أرامكو</span>
-    <span class="chip" onclick="quickSearch('1120')">🏦 الراجحي</span>
-    <span class="chip" onclick="quickSearch('2010')">⚗️ سابك</span>
-    <span class="chip" onclick="quickSearch('1180')">🏛️ الأهلي</span>
-    <span class="chip" onclick="quickSearch('4280')">🏗️ أكوا باور</span>
+
+  <div class="header-controls">
+    <div class="header-row1">
+      <input type="text" class="sym-input" id="symInput" placeholder="رمز السهم · مثال: 2222" maxlength="6">
+      <input type="text" class="extras-input" id="extrasInput" placeholder="📝 إضافات · أخبار، قروض، ملاحظات...">
+      <button class="btn btn-primary" id="btnSearch" onclick="startAnalysis()">⚡ تحليل</button>
+      <button class="btn btn-stop"   id="btnStop"   onclick="stopAnalysis()">⏹ إيقاف</button>
+      <a href="https://salmamn83.github.io/TASI-STOCK-SCREENER/" target="_blank" class="screener-btn">🔍 فلتر الأسهم</a>
+    </div>
+    <div class="chips">
+      <span class="chip" onclick="quickSearch('2222')">🛢️ أرامكو</span>
+      <span class="chip" onclick="quickSearch('1120')">🏦 الراجحي</span>
+      <span class="chip" onclick="quickSearch('2010')">⚗️ سابك</span>
+      <span class="chip" onclick="quickSearch('1180')">🏛️ الأهلي</span>
+      <span class="chip" onclick="quickSearch('4280')">🏗️ أكوا باور</span>
+    </div>
   </div>
 </div>
 
