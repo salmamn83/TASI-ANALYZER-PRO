@@ -195,6 +195,21 @@ td.cur{font-weight:700;color:var(--text)}
 /* تاريخ التحديث */
 .updated-tag{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px}
 
+
+/* ── وضع التحرير ── */
+.edit-btn{font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid rgba(245,158,11,0.3);background:rgba(245,158,11,0.08);color:var(--amber);cursor:pointer;font-family:inherit;transition:all .2s;margin-right:auto}
+.edit-btn:hover{background:rgba(245,158,11,0.15);border-color:rgba(245,158,11,0.5)}
+.edit-btn.active{background:rgba(245,158,11,0.2);border-color:var(--amber)}
+.recalc-btn{font-size:11px;padding:3px 10px;border-radius:6px;border:none;background:linear-gradient(135deg,#10b981,#059669);color:#fff;cursor:pointer;font-family:inherit;font-weight:600;display:none}
+.reset-btn{font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid rgba(239,68,68,0.3);background:rgba(239,68,68,0.08);color:var(--red);cursor:pointer;font-family:inherit;display:none}
+.edit-input{background:rgba(15,23,42,0.9);border:1px solid var(--amber);border-radius:6px;padding:3px 8px;color:var(--amber);font-family:var(--mono);font-size:12px;width:100%;outline:none;text-align:right}
+.edit-input:focus{box-shadow:0 0 0 2px rgba(245,158,11,0.2)}
+td .edit-input{width:120px}
+.edit-mode td.cur,.edit-mode td:not(.lbl){cursor:pointer}
+.edited-badge{font-size:10px;background:rgba(245,158,11,0.15);color:var(--amber);border:1px solid rgba(245,158,11,0.3);border-radius:4px;padding:1px 6px;margin-right:4px}
+.recalc-bar{display:none;align-items:center;gap:8px;padding:10px 14px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-radius:10px;margin-top:10px}
+.recalc-bar.show{display:flex}
+
 @media(max-width:600px){
   .chips{display:none}
   .mkt-metrics{grid-template-columns:repeat(2,1fr)}
@@ -280,6 +295,9 @@ const MSGS = [
 ];
 
 let abortCtrl = null;
+let originalData = null;   // البيانات الأصلية من API
+let editedData   = null;   // البيانات بعد التعديل
+let editMode     = {};     // حالة وضع التحرير لكل قسم
 
 // تشغيل تلقائي من URL
 window.addEventListener('DOMContentLoaded', () => {
@@ -335,6 +353,9 @@ async function startAnalysis() {
     if (!data || data.error) { showError('❌ ' + (data?.error || 'خطأ غير محدد')); return; }
     if (!data.section1)      { showError('❌ البيانات غير مكتملة'); return; }
 
+    originalData = JSON.parse(JSON.stringify(data)); // نسخة أصلية
+    editedData   = JSON.parse(JSON.stringify(data)); // نسخة قابلة للتعديل
+    editMode     = {};
     renderResults(sym, data);
   } catch(e) {
     if (e.name === 'AbortError') return;
@@ -585,14 +606,16 @@ function buildS2(s) {
 function buildS3(s) {
   const yrs = s.years || [];
 
-  function buildTable(rows, title, emoji) {
+  function buildTable(rows, title, emoji, tableName) {
     const hdrs = yrs.map(y=>`<th>${y}</th>`).join('');
     const trs  = rows.map(row => {
       const tds = (row.values||[]).map((v,i) => {
         const prev = row.values[i+1];
         let cls = '';
         if (prev!=null && v!=null) cls = v>prev?'pct-up':v<prev?'pct-dn':'';
-        return `<td class="${i===0?'cur':''} ${cls}">${v!=null?fmtFull(v):'—'}</td>`;
+        const key = tableName ? `${tableName}|${row.name}|${i}` : '';
+        const dataAttrs = tableName ? `data-section="annual" data-field="${row.field}" data-key="${key}" data-value="${v||0}"` : '';
+        return `<td class="${i===0?'cur':''} ${cls}" ${dataAttrs}>${v!=null?fmtFull(v):'—'}</td>`;
       }).join('');
       return `<tr><td class="lbl">${row.name}</td>${tds}</tr>`;
     }).join('');
@@ -610,11 +633,17 @@ function buildS3(s) {
     <div class="card-hdr">
       <span class="card-emoji">📊</span>
       <span class="card-title">البيانات المالية · آخر 3 سنوات</span>
+      <button id="editBtn_annual" class="edit-btn" onclick="toggleEditMode('annual')">✏️ تحرير البيانات</button>
     </div>
     <div class="card-body">
-      ${buildTable(s.financialPosition, 'المركز المالي', 'أ·')}
-      ${buildTable(s.incomeStatement,   'قائمة الدخل',   'ب·')}
-      ${buildTable(s.cashFlows,         'التدفقات النقدية', 'ج·')}
+      <div id="recalcBar_annual" class="recalc-bar">
+        <span style="font-size:12px;color:var(--amber)">⚠️ البيانات معدّلة</span>
+        <button class="recalc-btn" style="display:block" onclick="recalcAll('annual')">🔄 إعادة الحساب</button>
+        <button class="reset-btn" style="display:block" onclick="resetSection('annual')">↩️ استعادة الأصلية</button>
+      </div>
+      ${buildTable(s.financialPosition, 'المركز المالي', 'أ·', 'financialPosition')}
+      ${buildTable(s.incomeStatement, 'قائمة الدخل', 'ب·', 'incomeStatement')}
+      ${buildTable(s.cashFlows, 'التدفقات النقدية', 'ج·', 'cashFlows')}
     </div>
   </div>`;
 }
@@ -635,9 +664,9 @@ function buildS4Quarterly(q) {
   const rows = q.rows.map(r => `
     <tr>
       <td class="lbl">${r.name}</td>
-      <td class="cur">${fmtFull(r.current)}</td>
-      <td>${fmtFull(r.previous)}</td>
-      <td>${fmtFull(r.similar)}</td>
+      <td class="cur" data-section="quarterly" data-field="current" data-key="${r.name}|current" data-value="${r.current||0}">${fmtFull(r.current)}</td>
+      <td data-section="quarterly" data-field="previous" data-key="${r.name}|previous" data-value="${r.previous||0}">${fmtFull(r.previous)}</td>
+      <td data-section="quarterly" data-field="similar" data-key="${r.name}|similar" data-value="${r.similar||0}">${fmtFull(r.similar)}</td>
       <td>${pct(r.qoq)}</td>
       <td>${pct(r.yoy)}</td>
     </tr>`).join('');
@@ -655,8 +684,17 @@ function buildS4Quarterly(q) {
   })() : '';
 
   return `<div class="card">
-    <div class="card-hdr"><span class="card-emoji">📊</span><span class="card-title">التقييم الربع سنوي</span></div>
+    <div class="card-hdr">
+      <span class="card-emoji">📊</span>
+      <span class="card-title">التقييم الربع سنوي</span>
+      <button id="editBtn_quarterly" class="edit-btn" onclick="toggleEditMode('quarterly')">✏️ تحرير البيانات</button>
+    </div>
     <div class="card-body">
+      <div id="recalcBar_quarterly" class="recalc-bar">
+        <span style="font-size:12px;color:var(--amber)">⚠️ البيانات معدّلة</span>
+        <button class="recalc-btn" style="display:block" onclick="recalcAll('quarterly')">🔄 إعادة الحساب</button>
+        <button class="reset-btn" style="display:block" onclick="resetSection('quarterly')">↩️ استعادة الأصلية</button>
+      </div>
       <div class="tbl-wrap">
         <table>
           <thead>
@@ -754,9 +792,32 @@ function buildS4FairValue(fv, at, fp) {
   const upsideClr = tgt.upside>=0?'var(--green)':'var(--red)';
 
   return `<div class="card">
-    <div class="card-hdr"><span class="card-emoji">⚖️</span><span class="card-title">التقييم والقيمة العادلة</span></div>
+    <div class="card-hdr">
+      <span class="card-emoji">⚖️</span>
+      <span class="card-title">التقييم والقيمة العادلة</span>
+      <button id="editBtn_valuation" class="edit-btn" onclick="toggleEditMode('valuation')">✏️ تحرير المدخلات</button>
+    </div>
     <div class="card-body">
 
+      <div id="recalcBar_valuation" class="recalc-bar">
+        <span style="font-size:12px;color:var(--amber)">⚠️ المدخلات معدّلة</span>
+        <button class="recalc-btn" style="display:block" onclick="recalcAll('valuation')">🔄 إعادة الحساب</button>
+        <button class="reset-btn" style="display:block" onclick="resetSection('valuation')">↩️ استعادة الأصلية</button>
+      </div>
+      <div id="valuation_inputs" style="display:none;margin-bottom:12px">
+        <div class="kv-grid-2">
+          <div class="kv">
+            <div class="kv-lbl">🏭 مكرر القطاع (للتعديل)</div>
+            <input class="edit-input" id="input_sectorPE" placeholder="مثال: 20" 
+              onchange="updateValue('valuation','sectorPE','sectorPE',this.value)">
+          </div>
+          <div class="kv">
+            <div class="kv-lbl">📈 معدل نمو DCF % (للتعديل)</div>
+            <input class="edit-input" id="input_dcfGrowth" placeholder="مثال: 8" 
+              onchange="updateValue('valuation','dcfGrowth','dcfGrowth',this.value)">
+          </div>
+        </div>
+      </div>
       <div class="sec-lbl">🔬 القيمة العادلة</div>
       <div class="fv-grid">${fvCards}</div>
       <div style="margin-top:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
@@ -824,6 +885,259 @@ function buildS4Score(sc, finalSummary) {
     </div>
   </div>`;
 }
+
+// ═══════════════════════════════════════════════════════
+// نظام التحرير وإعادة الحساب
+// ═══════════════════════════════════════════════════════
+
+function toggleEditMode(section) {
+  editMode[section] = !editMode[section];
+  const btn = document.getElementById('editBtn_' + section);
+  const recalcBar = document.getElementById('recalcBar_' + section);
+  if (editMode[section]) {
+    btn.textContent = section === 'valuation' ? '✏️ إلغاء' : '✏️ إلغاء التحرير';
+    btn.classList.add('active');
+    if (recalcBar) recalcBar.classList.add('show');
+    if (section === 'valuation') {
+      const inp = document.getElementById('valuation_inputs');
+      if (inp) inp.style.display = 'block';
+      const spEl = document.getElementById('input_sectorPE');
+      const dgEl = document.getElementById('input_dcfGrowth');
+      if (spEl) spEl.value = editedData.section4.sectorPE || '';
+      if (dgEl) dgEl.value = editedData._dcfGrowth || '';
+    } else {
+      enableEditSection(section);
+    }
+  } else {
+    btn.textContent = section === 'valuation' ? '✏️ تحرير المدخلات' : '✏️ تحرير البيانات';
+    btn.classList.remove('active');
+    if (recalcBar) recalcBar.classList.remove('show');
+    if (section === 'valuation') {
+      const inp = document.getElementById('valuation_inputs');
+      if (inp) inp.style.display = 'none';
+    } else {
+      disableEditSection(section);
+    }
+  }
+}
+
+function enableEditSection(section) {
+  const cells = document.querySelectorAll(`[data-section="${section}"][data-field]`);
+  cells.forEach(cell => {
+    const val = cell.getAttribute('data-value');
+    const field = cell.getAttribute('data-field');
+    const key = cell.getAttribute('data-key');
+    const orig = cell.textContent.trim();
+    cell.setAttribute('data-orig', orig);
+    cell.innerHTML = `<input class="edit-input" value="${val||''}" 
+      onchange="updateValue('${section}','${field}','${key}',this.value)"
+      onfocus="this.select()">`;
+  });
+}
+
+function disableEditSection(section) {
+  const cells = document.querySelectorAll(`[data-section="${section}"][data-field]`);
+  cells.forEach(cell => {
+    const orig = cell.getAttribute('data-orig');
+    if (orig) cell.textContent = orig;
+  });
+}
+
+function updateValue(section, field, key, newVal) {
+  const num = parseFloat(newVal.replace(/,/g,''));
+  if (isNaN(num)) return;
+  
+  // تحديث editedData
+  if (section === 'annual') {
+    const parts = key.split('|'); // format: "tableName|rowName|yearIndex"
+    const tableName = parts[0];
+    const rowName = parts[1];
+    const yearIdx = parseInt(parts[2]);
+    const table = editedData.section3[tableName];
+    if (table) {
+      const row = table.find(r => r.name === rowName);
+      if (row) row.values[yearIdx] = num;
+    }
+  } else if (section === 'quarterly') {
+    const parts = key.split('|'); // format: "rowName|col"
+    const rowName = parts[0];
+    const col = parts[1];
+    const row = editedData.section4.quarterly.rows.find(r => r.name === rowName);
+    if (row) row[col] = num;
+  } else if (section === 'valuation') {
+    if (key === 'sectorPE') editedData.section4.sectorPE = num;
+    else if (key === 'dcfGrowth') editedData._dcfGrowth = num;
+  }
+}
+
+function recalcAll(section) {
+  // إعادة حساب المؤشرات المالية
+  recalcIndicators();
+  // إعادة حساب القيمة العادلة
+  recalcFairValue();
+  // إعادة حساب التقييم الربع سنوي
+  recalcQuarterly();
+  // إعادة رسم التقرير
+  renderResults(editedData.section1.symbol, editedData);
+  // إعادة تفعيل وضع التحرير
+  setTimeout(() => {
+    if (editMode[section]) {
+      editMode[section] = false;
+      toggleEditMode(section);
+    }
+  }, 100);
+}
+
+function resetSection(section) {
+  editedData = JSON.parse(JSON.stringify(originalData));
+  editMode[section] = true;
+  toggleEditMode(section);
+  recalcAll(section);
+}
+
+function recalcIndicators() {
+  const inc = editedData.section3.incomeStatement;
+  const bal = editedData.section3.financialPosition;
+  const years = editedData.section3.years;
+
+  const getVal = (arr, name, idx) => {
+    const row = arr.find(r => r.name === name);
+    return row ? (row.values[idx] || 0) : 0;
+  };
+
+  const ni0    = getVal(inc, 'صافي الدخل', 0);
+  const ni1    = getVal(inc, 'صافي الدخل', 1);
+  const rev0   = getVal(inc, 'إجمالي الإيرادات', 0);
+  const rev1   = getVal(inc, 'إجمالي الإيرادات', 1);
+  const eq0    = getVal(bal, 'حقوق الملكية', 0);
+  const eq1    = getVal(bal, 'حقوق الملكية', 1);
+  const ast0   = getVal(bal, 'إجمالي الأصول', 0);
+  const ast1   = getVal(bal, 'إجمالي الأصول', 1);
+  const debt0  = getVal(bal, 'إجمالي الديون', 0);
+  const debt1  = getVal(bal, 'إجمالي الديون', 1);
+
+  const ind = editedData.section4.indicators;
+  if (ind) {
+    ind.profitMargin.current  = rev0  > 0 ? round2((ni0/rev0)*100)   : null;
+    ind.profitMargin.previous = rev1  > 0 ? round2((ni1/rev1)*100)   : null;
+    ind.roe.current           = eq0   > 0 ? round2((ni0/eq0)*100)    : null;
+    ind.roe.previous          = eq1   > 0 ? round2((ni1/eq1)*100)    : null;
+    ind.roa.current           = ast0  > 0 ? round2((ni0/ast0)*100)   : null;
+    ind.roa.previous          = ast1  > 0 ? round2((ni1/ast1)*100)   : null;
+    ind.debtToEquity.current  = eq0   > 0 ? round2(debt0/eq0)        : null;
+    ind.debtToEquity.previous = eq1   > 0 ? round2(debt1/eq1)        : null;
+    ind.profitMargin.verdict  = ind.profitMargin.current >= ind.profitMargin.previous ? 'تحسن' : 'تراجع';
+    ind.roe.verdict           = ind.roe.current >= ind.roe.previous ? 'كفاءة عالية' : 'تراجع';
+    ind.roa.verdict           = ind.roa.current >= ind.roa.previous ? 'تحسن' : 'تراجع';
+    ind.debtToEquity.verdict  = ind.debtToEquity.current < 0.5 ? 'مخاطر منخفضة' : ind.debtToEquity.current <= 1.5 ? 'مخاطر متوسطة' : 'مخاطر مرتفعة';
+  }
+
+  // إعادة حساب EPS و P/E
+  const shares = editedData.section1.sharesOutstanding;
+  const qRows  = editedData.section4.quarterly.rows;
+  const niRow  = qRows.find(r => r.name === 'صافي الدخل');
+  if (niRow && shares > 0) {
+    const ttm = (niRow.current||0) + (niRow.previous||0) + (niRow.similar||0);
+    const eps = round4(ttm / shares);
+    editedData.section1.eps = eps;
+    const price = editedData.section2.price;
+    editedData.section1.peTTM = eps > 0 ? round2(price / eps) : null;
+    editedData.section4.peTTM = editedData.section1.peTTM;
+  }
+}
+
+function recalcFairValue() {
+  const price   = editedData.section2.price;
+  const eps     = editedData.section1.eps || 0;
+  const sectorPE = editedData.section4.sectorPE;
+  const shares  = editedData.section1.sharesOutstanding;
+  const marketCap = editedData.section1.marketCap;
+
+  // FCF من التدفقات
+  const cfRows = editedData.section3.cashFlows;
+  const fcfRow = cfRows.find(r => r.name === 'التدفق الحر FCF');
+  const fcf    = fcfRow ? (fcfRow.values[0] || 0) : 0;
+  const fcfPrev = fcfRow ? (fcfRow.values[1] || 0) : 0;
+
+  const r = 0.10, gInf = 0.03;
+  const detail = editedData.section4.fairValue.detail || {};
+  const methods = {};
+
+  // DCF
+  if (fcf > 0 && shares > 0) {
+    const fcfGrowth = fcfPrev > 0 ? Math.min(Math.max((fcf - fcfPrev) / fcfPrev, 0.01), 0.25) : 0.05;
+    const g = editedData._dcfGrowth ? editedData._dcfGrowth / 100 : fcfGrowth;
+    let totalPV = 0, cf = fcf;
+    for (let n = 1; n <= 5; n++) { cf *= (1+g); totalPV += cf / Math.pow(1+r, n); }
+    totalPV += (cf * (1+gInf)) / (r-gInf) / Math.pow(1+r, 5);
+    methods.dcf = round2(totalPV / shares);
+  }
+
+  // سهمك (لا يتغير)
+  if (detail.sahmk) methods.sahmk = detail.sahmk.value;
+
+  // مكرر القطاع
+  if (sectorPE && eps > 0) methods.sectorPE = round2(sectorPE * eps);
+
+  // DDM (لا يتغير)
+  if (detail.ddm && !detail.ddm.replaced) methods.ddm = detail.ddm.value;
+
+  const active = Object.entries(methods).filter(([,v]) => v != null && v > 0);
+  if (!active.length) return;
+
+  const avg = active.reduce((s,[,v]) => s+v, 0) / active.length;
+  const neutralPE = 17;
+  let fairValue = 0, totalW = 0;
+  const newDetail = {};
+
+  // أوزان حسب حجم الشركة
+  const b = 1e9;
+  let weights = marketCap > 50*b ? {dcf:0.40,ddm:0.30,sahmk:0.20,sectorPE:0.10}
+               : marketCap > 10*b ? {dcf:0.35,ddm:0.20,sahmk:0.25,sectorPE:0.20}
+               : {dcf:0.30,ddm:0.15,sahmk:0.25,sectorPE:0.30};
+
+  active.forEach(([k, v]) => {
+    const ratio = v / avg;
+    const val = (ratio < 0.5 || ratio > 2.0) ? round2(neutralPE * eps) : v;
+    const replaced = (ratio < 0.5 || ratio > 2.0);
+    const w = weights[k] || 0.25;
+    fairValue += val * w;
+    totalW += w;
+    newDetail[k] = { value: val, weight: round2(w * 100), replaced };
+  });
+
+  fairValue = round2(fairValue / (totalW || 1));
+  const diffPct = ((fairValue - price) / fairValue) * 100;
+  const verdict = diffPct > 10 ? 'مقوم بأقل من قيمته' : diffPct >= -10 ? 'يتداول بالقيمة العادلة' : 'مبالغ في تقييمه';
+
+  editedData.section4.fairValue = { value: fairValue, verdict, detail: newDetail };
+
+  // إعادة حساب السعر المستقبلي
+  const peTTM = editedData.section4.peTTM;
+  if (peTTM && eps > 0) {
+    editedData.section4.futurePrice = {
+      base:   round2(peTTM * eps),
+      grow10: round2(peTTM * eps * 1.10),
+      grow20: round2(peTTM * eps * 1.20),
+      futureEPS: eps
+    };
+  }
+}
+
+function recalcQuarterly() {
+  const rows = editedData.section4.quarterly.rows;
+  rows.forEach(row => {
+    if (row.previous != null && row.previous !== 0)
+      row.qoq = round1(((row.current - row.previous) / Math.abs(row.previous)) * 100);
+    if (row.similar != null && row.similar !== 0)
+      row.yoy = round1(((row.current - row.similar) / Math.abs(row.similar)) * 100);
+  });
+}
+
+function round2(n) { return Math.round(n * 100) / 100; }
+function round4(n) { return Math.round(n * 10000) / 10000; }
+function round1(n) { return Math.round(n * 10) / 10; }
+
 </script>
 </body>
 </html>
