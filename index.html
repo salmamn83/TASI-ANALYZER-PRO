@@ -609,13 +609,21 @@ function buildS2(s) {
 function buildS3(s) {
   const yrs = s.years || [];
 
+  // البنود التي يكون انخفاضها إيجابياً
+  const inverseRows = ['الالتزامات','إجمالي الديون'];
+
   function buildTable(rows, title, emoji, tableName) {
     const hdrs = yrs.map(y=>`<th>${y}</th>`).join('');
     const trs  = rows.map(row => {
+      const inverse = inverseRows.includes(row.name);
+      // نحدد الاتجاه لكل عمود بمقارنته بالعمود الذي يليه (الأقدم)
       const tds = (row.values||[]).map((v,i) => {
-        const prev = row.values[i+1];
+        const next = row.values[i+1]; // السنة الأقدم
         let cls = '';
-        if (prev!=null && v!=null) cls = v>prev?'pct-up':v<prev?'pct-dn':'';
+        if (next!=null && v!=null && typeof v === 'number' && typeof next === 'number') {
+          if (inverse) cls = v > next ? 'pct-dn' : v < next ? 'pct-up' : '';
+          else         cls = v > next ? 'pct-up' : v < next ? 'pct-dn' : '';
+        }
         const key = tableName ? `${tableName}|${row.name}|${i}` : '';
         const dataAttrs = tableName ? `data-section="annual" data-field="${row.field}" data-key="${key}" data-value="${v||0}"` : '';
         return `<td class="${i===0?'cur':''} ${cls}" ${dataAttrs}>${v!=null?fmtFull(v):'—'}</td>`;
