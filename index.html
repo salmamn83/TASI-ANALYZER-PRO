@@ -259,12 +259,8 @@ td .edit-input{width:120px}
       <button class="btn btn-stop"   id="btnStop"   onclick="stopAnalysis()">⏹ إيقاف</button>
       <a href="https://salmamn83.github.io/TASI-STOCK-SCREENER/" target="_blank" class="screener-btn">🔍 فلتر الأسهم</a>
     </div>
-    <div class="chips">
-      <span class="chip" onclick="quickSearch('2222')">🛢️ أرامكو</span>
-      <span class="chip" onclick="quickSearch('1120')">🏦 الراجحي</span>
-      <span class="chip" onclick="quickSearch('2010')">⚗️ سابك</span>
-      <span class="chip" onclick="quickSearch('1180')">🏛️ الأهلي</span>
-      <span class="chip" onclick="quickSearch('4280')">🏗️ أكوا باور</span>
+    <div class="chips" id="recentChips">
+      <span style="font-size:11px;color:var(--text3)">الرموز الأخيرة ستظهر هنا</span>
     </div>
   </div>
 </div>
@@ -308,12 +304,44 @@ const MSGS = [
 ];
 
 let abortCtrl = null;
-let originalData = null;   // البيانات الأصلية من API
-let editedData   = null;   // البيانات بعد التعديل
-let editMode     = {};     // حالة وضع التحرير لكل قسم
+let originalData = null;
+let editedData   = null;
+let editMode     = {};
+
+// ── الرموز الأخيرة ──
+const MAX_RECENT = 5;
+
+function getRecentSymbols() {
+  try { return JSON.parse(localStorage.getItem('recentSymbols') || '[]'); }
+  catch(e) { return []; }
+}
+
+function saveRecentSymbol(sym, name) {
+  try {
+    let recent = getRecentSymbols().filter(r => r.sym !== sym);
+    recent.unshift({ sym, name: name || sym });
+    recent = recent.slice(0, MAX_RECENT);
+    localStorage.setItem('recentSymbols', JSON.stringify(recent));
+    renderRecentChips();
+  } catch(e) {}
+}
+
+function renderRecentChips() {
+  const wrap = document.getElementById('recentChips');
+  if (!wrap) return;
+  const recent = getRecentSymbols();
+  if (!recent.length) {
+    wrap.innerHTML = '<span style="font-size:11px;color:var(--text3)">الرموز الأخيرة ستظهر هنا</span>';
+    return;
+  }
+  wrap.innerHTML = recent.map(r =>
+    `<span class="chip" onclick="quickSearch('${r.sym}')">📈 ${r.sym} <span style="color:var(--text3);font-size:10px">${r.name !== r.sym ? r.name : ''}</span></span>`
+  ).join('');
+}
 
 // تشغيل تلقائي من URL
 window.addEventListener('DOMContentLoaded', () => {
+  renderRecentChips();
   const sym = new URLSearchParams(location.search).get('symbol');
   if (sym) { document.getElementById('symInput').value = sym; startAnalysis(); }
 });
@@ -368,9 +396,11 @@ async function startAnalysis() {
     if (!data || data.error) { showError('❌ ' + (data?.error || 'خطأ غير محدد')); return; }
     if (!data.section1)      { showError('❌ البيانات غير مكتملة'); return; }
 
-    originalData = JSON.parse(JSON.stringify(data)); // نسخة أصلية
-    editedData   = JSON.parse(JSON.stringify(data)); // نسخة قابلة للتعديل
+    originalData = JSON.parse(JSON.stringify(data));
+    editedData   = JSON.parse(JSON.stringify(data));
     editMode     = {};
+    // حفظ الرمز في الأخيرة
+    saveRecentSymbol(sym, data.section1?.companyName || sym);
     renderResults(sym, data);
   } catch(e) {
     if (e.name === 'AbortError') return;
