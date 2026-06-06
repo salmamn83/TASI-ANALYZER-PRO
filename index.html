@@ -284,7 +284,7 @@ td .edit-input{width:120px}
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxRpwJYieUCHvdzQjmy0GvCgRNCUAyHAIa1I0xNHRCDhuQOlZoPAJKLDuvMT0S3Hyc/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzxC6mFmyQkU33wRpfl-GBB1QdfbOkin8IYqdh-FE2vjJrUI9P6RkkypQFHOhI4OQqq/exec";
 const TADAWUL_URL = "https://www.saudiexchange.sa/Resources/Reports-v2/DailyFinancialIndicators_en.html";
 
 const MSGS = [
@@ -497,8 +497,8 @@ function buildS1(s) {
       <div class="kv-grid">
         <div class="kv"><div class="kv-lbl">📈 القيمة السوقية</div><div class="kv-val">${fmtFull(s.marketCap)} ر</div></div>
         <div class="kv"><div class="kv-lbl">📊 عدد الأسهم</div><div class="kv-val">${fmtFull(s.sharesOutstanding)}</div></div>
-        <div class="kv"><div class="kv-lbl">📚 القيمة الدفترية/سهم</div><div class="kv-val">${s.bookValuePerShare??'—'} ر</div></div>
-        <div class="kv"><div class="kv-lbl">📐 السعر/الدفترية P/B</div><div class="kv-val">${s.pbRatio?s.pbRatio+'x':'—'}</div></div>
+        <div class="kv"><div class="kv-lbl">📚 القيمة الدفترية لآخر فترة معلنة</div><div class="kv-val">${s.bookValuePerShare??'—'} ر</div></div>
+        <div class="kv"><div class="kv-lbl">📐 مضاعف القيمة الدفترية</div><div class="kv-val">${s.pbRatio?s.pbRatio+'x':'—'}</div></div>
         <div class="kv"><div class="kv-lbl">💰 ربحية السهم EPS</div><div class="kv-val">${s.eps??'—'} ر</div></div>
         <div class="kv"><div class="kv-lbl">🔢 مكرر الربحية TTM</div><div class="kv-val">${s.peTTM?s.peTTM+'x':'—'}</div></div>
       </div>
@@ -973,22 +973,47 @@ function updateValue(section, field, key, newVal) {
   }
 }
 
-function recalcAll(section) {
-  // إعادة حساب المؤشرات المالية
-  recalcIndicators();
-  // إعادة حساب القيمة العادلة
-  recalcFairValue();
-  // إعادة حساب التقييم الربع سنوي
-  recalcQuarterly();
-  // إعادة رسم التقرير
-  renderResults(editedData.section1.symbol, editedData);
-  // إعادة تفعيل وضع التحرير
-  setTimeout(() => {
-    if (editMode[section]) {
-      editMode[section] = false;
-      toggleEditMode(section);
+async function recalcAll(section) {
+  // إظهار مؤشر التحميل
+  const bar = document.getElementById('recalcBar_' + section);
+  if (bar) {
+    bar.innerHTML = `<span style="font-size:12px;color:var(--amber)">⏳ جاري إعادة الحساب...</span>
+      <div class="spinner" style="width:18px;height:18px;border-width:2px"></div>`;
+  }
+
+  try {
+    // إرسال البيانات المعدّلة للـ Script
+    const res = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ editedData })
+    });
+    const newData = await res.json();
+
+    if (newData.error) {
+      alert('خطأ: ' + newData.error);
+      return;
     }
-  }, 100);
+
+    // تحديث editedData بالنتائج الجديدة
+    editedData = newData;
+
+    // إعادة رسم التقرير كاملاً
+    editMode = {};
+    renderResults(editedData.section1.symbol, editedData);
+
+    // إضافة شارة "معدّل" في شريط النتائج
+    const tag = document.getElementById('updatedTag');
+    if (tag) tag.innerHTML = '✏️ <span style="color:var(--amber)">بيانات معدّلة</span>';
+
+  } catch(e) {
+    alert('خطأ في الاتصال: ' + e.message);
+    // في حالة فشل الاتصال نعيد الحساب محلياً
+    recalcIndicators();
+    recalcFairValue();
+    recalcQuarterly();
+    renderResults(editedData.section1.symbol, editedData);
+  }
 }
 
 function resetSection(section) {
