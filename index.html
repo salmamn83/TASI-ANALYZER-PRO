@@ -293,7 +293,7 @@ td .edit-input{width:120px}
 </div>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwUqdbLAh4Zc_kYaMz0Okc-emKim0ZBa-xMv-heSXmLrpjxyoyEOTLno0kCG1zl7pqC/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzG7S5n7GggLkUkd4YUQ_VZEliCZ4yFG9tLyee4L9-bwzlV3FHcoeM8kC7L0QvwFUyH/exec";
 const TADAWUL_URL = "https://www.saudiexchange.sa/Resources/Reports-v2/DailyFinancialIndicators_en.html";
 
 const MSGS = [
@@ -686,6 +686,55 @@ function buildS3(s) {
       </div>`;
   }
 
+  // ملاحظات الدخل الاستثنائي
+  const excNotes = s.exceptionalNotes || [];
+  const excMap   = {}; // yearIndex -> note
+  excNotes.forEach(n => { excMap[n.yearIndex] = n; });
+
+  // إضافة ✱ على صافي الدخل في السنوات المتأثرة
+  function buildTableWithExc(rows, title, emoji, tableName) {
+    const hdrs = yrs.map(y=>`<th>${y}</th>`).join('');
+    const trs  = rows.map(row => {
+      const inverse = inverseRows.includes(row.name);
+      const isNetIncome = row.name === 'صافي الدخل';
+      const tds = (row.values||[]).map((v,i) => {
+        const next = row.values[i+1];
+        let cls = '';
+        if (next!=null && v!=null && typeof v==='number' && typeof next==='number') {
+          if (inverse) cls = v>next?'pct-dn':v<next?'pct-up':'';
+          else         cls = v>next?'pct-up':v<next?'pct-dn':'';
+        }
+        const key = tableName ? `${tableName}|${row.name}|${i}` : '';
+        const dataAttrs = tableName ? `data-section="annual" data-field="${row.field}" data-key="${key}" data-value="${v||0}"` : '';
+        const tdClass = [i===0?'cur':'', cls].filter(Boolean).join(' ');
+        // إضافة ✱ إذا كان صافي الدخل ويحتوي على استثنائي
+        const star = (isNetIncome && excMap[i]) ? ' <span style="color:var(--amber);font-size:11px" title="يحتوي على دخل استثنائي">✱</span>' : '';
+        return `<td class="${tdClass}" ${dataAttrs}>${v!=null?fmtFull(v):'—'}${star}</td>`;
+      }).join('');
+      return `<tr><td class="lbl">${row.name}</td>${tds}</tr>`;
+    }).join('');
+    return `
+      <div class="sec-lbl">${emoji} ${title}</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>البند</th>${hdrs}</tr></thead>
+          <tbody>${trs}</tbody>
+        </table>
+      </div>`;
+  }
+
+  // ملاحظات الاستثنائي أسفل الجدول
+  const excNotesHtml = excNotes.length ? `
+    <div style="margin-top:10px;padding:8px 12px;background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-radius:8px">
+      <div style="font-size:11px;font-weight:700;color:var(--amber);margin-bottom:4px">✱ ملاحظات الدخل الاستثنائي</div>
+      ${excNotes.map(n => `
+        <div style="font-size:11px;color:var(--text2);margin-bottom:2px">
+          ${n.year}: يحتوي صافي الدخل على ${n.exceptional>0?'دخل':'خسارة'} استثنائي قدره 
+          <span style="color:var(--amber);font-weight:600">${fmtFull(Math.abs(n.exceptional))} ريال</span>
+          (${n.pct>0?'+':''}${n.pct}% من صافي الدخل)
+        </div>`).join('')}
+    </div>` : '';
+
   return `<div class="card">
     <div class="card-hdr">
       <span class="card-emoji">📊</span>
@@ -698,9 +747,10 @@ function buildS3(s) {
         <button class="recalc-btn" style="display:block" onclick="recalcAll('annual')">🔄 إعادة الحساب</button>
         <button class="reset-btn" style="display:block" onclick="resetSection('annual')">↩️ استعادة الأصلية</button>
       </div>
-      ${buildTable(s.financialPosition, 'المركز المالي', 'أ·', 'financialPosition')}
-      ${buildTable(s.incomeStatement, 'قائمة الدخل', 'ب·', 'incomeStatement')}
-      ${buildTable(s.cashFlows, 'التدفقات النقدية', 'ج·', 'cashFlows')}
+      ${buildTableWithExc(s.financialPosition, 'المركز المالي', 'أ·', 'financialPosition')}
+      ${buildTableWithExc(s.incomeStatement, 'قائمة الدخل', 'ب·', 'incomeStatement')}
+      ${buildTableWithExc(s.cashFlows, 'التدفقات النقدية', 'ج·', 'cashFlows')}
+      ${excNotesHtml}
     </div>
   </div>`;
 }
